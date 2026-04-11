@@ -1,0 +1,28 @@
+# GitVersion.yml
+mode: ContinuousDeployment
+# Removed next-version since v1.0.0 tag exists - GitVersion will use tag as baseline
+tag-prefix: '[vV]?'
+branches:
+  main:
+    increment: Patch
+    # Removed label for stable releases (no pre-release suffix)
+    regex: ^master$|^main$
+    is-main-branch: true
+    track-merge-target: false
+  feature:
+    label: beta
+    increment: Patch
+    regex: ^feature(s)?[/-]
+    source-branches: ['main']
+    is-main-branch: false
+    pre-release-weight: 30000
+  bugfix:
+    label: beta
+    increment: Patch
+    regex: ^bugfix(es)?[/-]
+    source-branches: ['main']
+    is-main-branch: false
+    pre-release-weight: 30000
+
+ignore:
+  sha: []
