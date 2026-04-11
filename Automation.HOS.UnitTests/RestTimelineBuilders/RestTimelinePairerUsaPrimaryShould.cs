@@ -76,7 +76,7 @@ namespace Automation.HOS.UnitTests.RestTimelineBuilders
             Assert.That(nav.CurrentRestMoment.IsPrimary, Is.False);
             Assert.That(nav.CurrentRestMoment.IsPaired, Is.True);
 
-            await logger.SaveToFileAsync("c:\\code\\RestTimelinePairerUsaPrimaryShould.BuildNormalHappyPath.log");
+            //await logger.SaveToFileAsync("c:\\code\\RestTimelinePairerUsaPrimaryShould.BuildNormalHappyPath.log");
         }
 
         //TODO Write more Tests to fill the wholes.
