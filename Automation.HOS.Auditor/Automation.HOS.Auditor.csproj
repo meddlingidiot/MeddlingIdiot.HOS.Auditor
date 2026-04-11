@@ -17,8 +17,11 @@
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
 			<_Parameter1>Automation.HOS.UnitTests</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
+        </AssemblyAttribute>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>Automation.HOS.Auditor.UnitTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Automation.Dispatcher" Version="0.0.2" />
