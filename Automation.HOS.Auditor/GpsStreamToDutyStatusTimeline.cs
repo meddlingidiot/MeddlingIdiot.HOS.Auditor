@@ -4,12 +4,12 @@ using Automation.HOS.TimelineNavigator.Utilities;
 
 namespace Automation.HOS
 {
-    public class DataConverter : IDataConverter
+    public class GpsStreamToDutyStatusTimeline : IGpsStreamToDutyStatusTimeline
     {
         private const double AuditDrivingDistanceThreshold = 0.02;
         private readonly ILogger _logger;
 
-        public DataConverter(ILogger logger)
+        public GpsStreamToDutyStatusTimeline(ILogger logger)
         {
             _logger = logger;
         }

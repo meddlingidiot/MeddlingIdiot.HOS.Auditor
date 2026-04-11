@@ -1,9 +1,11 @@
-﻿using Automation.Dispatcher;
+﻿using System.Diagnostics.CodeAnalysis;
+using Automation.Dispatcher;
 using Automation.HOS.Queries;
 using Automation.HOS.Violations;
 
 namespace Automation.HOS.Handlers
 {
+    [ExcludeFromCodeCoverage]
     internal class AuditPointHandler : IRequestHandler<AuditPointQuery, ViolationResults>
     {
         private readonly IHosAuditor _hosAuditor;

@@ -2,7 +2,7 @@
 
 namespace Automation.HOS;
 
-public interface IDataConverter
+public interface IGpsStreamToDutyStatusTimeline
 {
     ITimelineNavigator ConvertGpsTimelineToDutyStatusTimeline(ITimelineNavigator gpsNavigator);
 }
