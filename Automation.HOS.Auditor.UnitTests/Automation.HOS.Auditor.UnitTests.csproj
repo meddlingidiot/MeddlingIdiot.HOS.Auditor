@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Automation.HOS.TimelineNavigator" Version="0.0.1" />
+    <PackageReference Include="Automation.HOS.TimelineNavigator" Version="0.0.4" />
     <PackageReference Include="TUnit" Version="1.*" />
   </ItemGroup>
 

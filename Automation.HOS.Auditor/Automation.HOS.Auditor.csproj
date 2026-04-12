@@ -25,7 +25,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Automation.Dispatcher" Version="0.0.2" />
-	  <PackageReference Include="Automation.HOS.TimelineNavigator" Version="0.0.1" />
+	  <PackageReference Include="Automation.HOS.TimelineNavigator" Version="0.0.4" />
 	</ItemGroup>
 
 </Project>
