@@ -2,6 +2,10 @@
 
 A .NET library for auditing commercial driver compliance with FMCSA Hours of Service (HOS) regulations. Given a driver's duty status timeline, it detects violations across multiple US regulatory frameworks and returns structured violation results.
 
+## Craftsmanship Note
+
+100% of the production code in this library was hand-written — no vibe coding. The codebase was developed test-first using TDD. I'll admit that AI helped fill in some of the coverage gaps in the test suite, but the implementation itself was not generated.
+
 ## Overview
 
 The auditor processes a driver's `ITimelineNavigator` — a moment-based duty status history — and evaluates it against configurable rule definitions. It enforces the four core FMCSA HOS rules:
@@ -285,6 +289,6 @@ CI is configured in `azure-pipelines.yml` and runs on pushes to `main`, `feature
 ## Dependencies
 
 | Package | Version | Purpose |
-|---|---|---|
-| `MeddlingIdiot.Dispatcher` | — | CQRS request/handler dispatch |
-| `MeddlingIdiot.HOS.TimelineNavigator` | 0.0.4 | Timeline navigation and moment structures |
+|---|---------|---|
+| `MeddlingIdiot.Dispatcher` | —       | CQRS request/handler dispatch |
+| `MeddlingIdiot.HOS.TimelineNavigator` | -       | Timeline navigation and moment structures |
