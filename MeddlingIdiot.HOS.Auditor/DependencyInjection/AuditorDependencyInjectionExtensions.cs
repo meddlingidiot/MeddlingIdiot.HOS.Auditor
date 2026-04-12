@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Automation.Dispatcher;
+using MeddlingIdiot.Dispatcher;
 using MeddlingIdiot.HOS.Queries;
 using MeddlingIdiot.HOS.Ruleset;
 using MeddlingIdiot.HOS.TimelineNavigator.Utilities;

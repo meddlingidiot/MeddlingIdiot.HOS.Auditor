@@ -1,4 +1,4 @@
-﻿using Automation.Dispatcher;
+﻿using MeddlingIdiot.Dispatcher;
 using MeddlingIdiot.HOS.TimelineNavigator;
 using MeddlingIdiot.HOS.Violations;
 

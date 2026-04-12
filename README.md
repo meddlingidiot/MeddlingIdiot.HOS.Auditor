@@ -1,4 +1,4 @@
-# Automation.HOS.Auditor
+# MeddlingIdiot.HOS.Auditor
 
 A .NET library for auditing commercial driver compliance with FMCSA Hours of Service (HOS) regulations. Given a driver's duty status timeline, it detects violations across multiple US regulatory frameworks and returns structured violation results.
 
@@ -35,7 +35,7 @@ It also handles sleeper berth split provisions, adverse conditions extensions, a
 The package is published to an internal Azure Artifacts NuGet feed. Add the feed to your `nuget.config` and install the package:
 
 ```
-dotnet add package Automation.HOS.Auditor
+dotnet add package MeddlingIdiot.HOS.Auditor
 ```
 
 ## Getting Started
@@ -58,6 +58,8 @@ services.AddSingleton<IHosAuditor>(new HosAuditor(new Us70HrRuleDefinition()));
 
 ### Auditing a Range
 
+Via `IHosAuditor` directly:
+
 ```csharp
 var query = new AuditRangeQuery(
     startTimestamp: DateTime.UtcNow.AddDays(-7),
@@ -65,7 +67,7 @@ var query = new AuditRangeQuery(
     navigator: driverTimeline
 );
 
-ViolationResults results = auditor.AuditRange(query);
+ViolationResults results = await auditor.AuditRangeAsync(query);
 
 foreach (var violation in results.Violations)
 {
@@ -74,7 +76,21 @@ foreach (var violation in results.Violations)
 }
 ```
 
+Via `IDispatcher` / `ISender`:
+
+```csharp
+var query = new AuditRangeQuery(
+    startTimestamp: DateTime.UtcNow.AddDays(-7),
+    finishTimestamp: DateTime.UtcNow,
+    navigator: driverTimeline
+);
+
+ViolationResults results = await dispatcher.Send(query);
+```
+
 ### Auditing a Point in Time
+
+Via `IHosAuditor` directly:
 
 ```csharp
 var query = new AuditPointQuery(
@@ -82,7 +98,18 @@ var query = new AuditPointQuery(
     navigator: driverTimeline
 );
 
-ViolationResults results = auditor.AuditPoint(query);
+ViolationResults results = await auditor.AuditPointAsync(query);
+```
+
+Via `IDispatcher` / `ISender`:
+
+```csharp
+var query = new AuditPointQuery(
+    timestamp: DateTime.UtcNow,
+    navigator: driverTimeline
+);
+
+ViolationResults results = await dispatcher.Send(query);
 ```
 
 ### Targeting Specific Rules
@@ -106,9 +133,59 @@ var query = new AuditRangeQuery(
     includeDebugInfo: true
 );
 
-ViolationResults results = auditor.AuditRange(query);
+ViolationResults results = await dispatcher.Send(query);
 Console.WriteLine(results.DebugInfo);
 ```
+
+### Using the Dispatcher
+
+`AddAuditor()` automatically calls `AddDispatcher(...)` and registers the `AuditRangeHandler` and `AuditPointHandler`. Inject `IDispatcher` (or the narrower `ISender`) wherever you need to dispatch queries:
+
+```csharp
+public class MyService(ISender sender)
+{
+    public async Task<ViolationResults> CheckDriverAsync(
+        ITimelineNavigator timeline, CancellationToken ct)
+    {
+        var query = new AuditRangeQuery(
+            startTimestamp: DateTime.UtcNow.AddDays(-7),
+            finishTimestamp: DateTime.UtcNow,
+            navigator: timeline
+        );
+
+        return await sender.Send(query, ct);
+    }
+}
+```
+
+### Adding Pipeline Behaviors
+
+Register cross-cutting concerns (logging, validation, timing) as open-generic `IPipelineBehavior<TRequest, TResponse>` implementations. Call `AddOpenBehavior` after `AddAuditor`:
+
+```csharp
+services.AddAuditor();
+services.AddOpenBehavior(typeof(LoggingBehavior<,>));
+```
+
+```csharp
+public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
+    : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse>
+{
+    public async Task<TResponse> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken = default)
+    {
+        logger.LogInformation("Handling {Request}", typeof(TRequest).Name);
+        var response = await next(cancellationToken);
+        logger.LogInformation("Handled {Request}", typeof(TRequest).Name);
+        return response;
+    }
+}
+```
+
+Behaviors run in registration order, wrapping the handler like middleware.
 
 ### GPS to Duty Status Conversion
 
@@ -176,7 +253,7 @@ ITimelineNavigator (duty status timeline)
 
 ### Key Design Patterns
 
-- **CQRS** — `AuditRangeQuery` / `AuditPointQuery` dispatched to handlers via `Automation.Dispatcher`
+- **CQRS** — `AuditRangeQuery` / `AuditPointQuery` dispatched to handlers via `MeddlingIdiot.Dispatcher`
 - **Strategy** — `IRuleDefinition` implementations swap regulatory limits without changing the engine
 - **Template Method** — `RuleBase.Accumulate()` defined by subclasses (`StandardRule`, `UnbrokenRule`, `ShiftRule`, `WindowRule`)
 - **Repository** — `ViolationGateway` deduplicates violations by start timestamp and limit
@@ -209,5 +286,5 @@ CI is configured in `azure-pipelines.yml` and runs on pushes to `main`, `feature
 
 | Package | Version | Purpose |
 |---|---|---|
-| `Automation.Dispatcher` | 0.0.2 | CQRS request/handler dispatch |
+| `MeddlingIdiot.Dispatcher` | — | CQRS request/handler dispatch |
 | `MeddlingIdiot.HOS.TimelineNavigator` | 0.0.4 | Timeline navigation and moment structures |
