@@ -1,0 +1,23 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using Automation.Dispatcher;
+using MeddlingIdiot.HOS.Queries;
+using MeddlingIdiot.HOS.Violations;
+
+namespace MeddlingIdiot.HOS.Handlers
+{
+    [ExcludeFromCodeCoverage]
+    internal class AuditPointHandler : IRequestHandler<AuditPointQuery, ViolationResults>
+    {
+        private readonly IHosAuditor _hosAuditor;
+
+        public AuditPointHandler(IHosAuditor hosAuditor)
+        {
+            _hosAuditor = hosAuditor;
+        }
+
+        public Task<ViolationResults> Handle(AuditPointQuery request, CancellationToken cancellationToken)
+        {
+            return _hosAuditor.AuditPointAsync(request);
+        }
+    }
+}

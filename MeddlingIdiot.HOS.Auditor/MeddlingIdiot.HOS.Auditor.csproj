@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <TargetFrameworks>net10.0;net8.0;net9.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>MeddlingIdiot.HOS</RootNamespace>
+  </PropertyGroup>
+
+	<ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>MeddlingIdiot.HOS.Auditor.UnitTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Automation.Dispatcher" Version="0.0.2" />
+	  <PackageReference Include="MeddlingIdiot.HOS.TimelineNavigator" Version="0.0.5" />
+	</ItemGroup>
+
+</Project>

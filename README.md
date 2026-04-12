@@ -210,4 +210,4 @@ CI is configured in `azure-pipelines.yml` and runs on pushes to `main`, `feature
 | Package | Version | Purpose |
 |---|---|---|
 | `Automation.Dispatcher` | 0.0.2 | CQRS request/handler dispatch |
-| `Automation.HOS.TimelineNavigator` | 0.0.4 | Timeline navigation and moment structures |
+| `MeddlingIdiot.HOS.TimelineNavigator` | 0.0.4 | Timeline navigation and moment structures |

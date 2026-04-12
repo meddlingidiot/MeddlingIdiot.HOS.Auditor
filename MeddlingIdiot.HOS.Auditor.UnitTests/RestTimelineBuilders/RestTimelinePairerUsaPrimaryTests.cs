@@ -1,0 +1,71 @@
+﻿using MeddlingIdiot.HOS.RestTimelineBuilders;
+using MeddlingIdiot.HOS.Ruleset;
+using MeddlingIdiot.HOS.TimelineNavigator;
+using MeddlingIdiot.HOS.TimelineNavigator.Moments;
+using MeddlingIdiot.HOS.TimelineNavigator.Timelines;
+using MeddlingIdiot.HOS.TimelineNavigator.Utilities;
+
+namespace MeddlingIdiot.HOS.Auditor.UnitTests.RestTimelineBuilders;
+
+public class RestTimelinePairerUsaPrimaryTests
+{
+    private static void PopulateTimeline(ITimelineNavigator data)
+    {
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/14/2023 08:00:00"), DutyStatus.OnDuty));
+        //ON-DUTY 10 HOURS
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/14/2023 18:00:00"), DutyStatus.OffDuty));
+        //OFF DUTY 1 HOURS
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/14/2023 19:00:00"), DutyStatus.Sleeper));
+        //SLEEPER 8 HOUR (TOTAL REST 9 HOURS)
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/15/2023 03:00:00"), DutyStatus.OnDuty));
+        //ON DUTY 1 HOURS
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/15/2023 04:00:00"), DutyStatus.OffDuty));
+        //OFF DUTY 4 HOURS (Pairs)
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/15/2023 08:00:00"), DutyStatus.OnDuty));
+        //ON DUTY Rest of day
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/16/2023 04:00:00"), DutyStatus.Sleeper));
+        //SLEEPER 4 HOURS
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/16/2023 08:00:00"), DutyStatus.OnDuty));
+        //ON DUTY Rest of day
+        data.Add(new DutyStatusChangeMoment(DateTime.Parse("02/17/2023 00:00:00"), DutyStatus.Unknown));
+        //UNKNOWN TIL EOT
+    }
+
+    [Test]
+    public async Task BuildNormalHappyPath()
+    {
+        var logger = new InMemoryLogger();
+        var categories = new List<string> { LoggerCategories.Pairing };
+        logger.Initialize(categories);
+
+        var nav = new TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(new DateTime(0)));
+        PopulateTimeline(nav);
+
+        var rule = new Us60HrRuleDefinition();
+        var restTimelineBuilder = new RestTimelineBuilderUsaPrimary(logger, rule, nav);
+
+        var sut = new RestTimelinePairerUsaPrimary(logger, rule, nav);
+
+        restTimelineBuilder.BuildTimeline();
+        logger.Debug(LoggerCategories.Pairing, "Before Pairing -------------------------------");
+        nav.DumpSplitRestTimeline(logger);
+        sut.PairSleeperSplits();
+        logger.Debug(LoggerCategories.Pairing, "After Pairing -------------------------------");
+        nav.DumpSplitRestTimeline(logger);
+
+        nav.JumpTo(DateTime.Parse("02/14/2023 19:00:00"));
+        await Assert.That(nav.CurrentRestMoment.IsPrimary).IsTrue();
+        await Assert.That(nav.CurrentRestMoment.IsPaired).IsTrue();
+
+        nav.JumpTo(DateTime.Parse("02/15/2023 04:00:00"));
+        await Assert.That(nav.CurrentRestMoment.Timestamp).IsEqualTo(DateTime.Parse("02/15/2023 04:00:00"));
+        await Assert.That(nav.CurrentRestMoment.IsPrimary).IsFalse();
+        await Assert.That(nav.CurrentRestMoment.IsPaired).IsTrue();
+        await Assert.That(nav.DutyStatus).IsEqualTo(DutyStatus.OffDuty);
+
+        nav.JumpTo(DateTime.Parse("02/15/2023 04:00:00"));
+        await Assert.That(nav.CurrentRestMoment.Timestamp).IsEqualTo(DateTime.Parse("02/15/2023 04:00:00"));
+        await Assert.That(nav.CurrentRestMoment.IsPrimary).IsFalse();
+        await Assert.That(nav.CurrentRestMoment.IsPaired).IsTrue();
+    }
+}
