@@ -266,9 +266,46 @@ ITimelineNavigator (duty status timeline)
 - **Template Method** — `RuleBase.Accumulate()` defined by subclasses (`StandardRule`, `UnbrokenRule`, `ShiftRule`, `WindowRule`)
 - **Repository** — `ViolationGateway` deduplicates violations by start timestamp and limit
 
+## FMCSA Compliance Test Coverage
+
+All 30 examples from the official FMCSA HOS document ([FMCSA-HOS-395-HOS-EXAMPLES, 2022-04-28](https://www.fmcsa.dot.gov/sites/fmcsa.dot.gov/files/2022-04/FMCSA-HOS-395-HOS-EXAMPLES%282022-04-28%29_0.pdf)) are covered by dedicated test methods in [`FmcsaExamplesTests.cs`](MeddlingIdiot.HOS.Auditor.UnitTests/FmcsaExamplesTests.cs). Each example has its own test:
+
+| Test | Description |
+|---|---|
+| `Example01_14HourDrivingWindow_NoViolations` | 14-hour driving window — no violations |
+| `Example02_10HourConsecutiveHourOffDutyBreak_NoViolations` | 10-hour consecutive off-duty break — no violations |
+| `Example03_DrivingLimit_NoViolations` | Driving limit — no violations |
+| `Example04_DrivingLimit_WithViolations` | Driving limit — with violations |
+| `Example05_RestBreaks_NoViolations` | Rest breaks — no violations |
+| `Example06_34HourRestart_NoViolations` | 34-hour restart — no violations |
+| `Example07_34HourRestartMixedRest_NoViolations` | 34-hour restart with mixed rest — no violations |
+| `Example08_34HourRestartMultiday_NoViolations` | 34-hour restart multi-day — no violations |
+| `Example09_16HourDrivingWindow_NoViolations` | 16-hour driving window — no violations |
+| `Example10_16HourDrivingWindow_WithViolations` | 16-hour driving window — with violations |
+| `Example11_TwoDriverPropertyCarringCmv_NoViolations` | Two-driver property-carrying CMV — no violations |
+| `Example12_SleeperBerthUse_NoViolations` | Sleeper berth use — no violations |
+| `Example13_TwoDriverProperCarryingCmv_WithViolations` | Two-driver property-carrying CMV — with violations |
+| `Example14_SleeperBerthUseWitRestBreak_WithViolations` | Sleeper berth use with rest break — with violations |
+| `Example15_SleeperBerthUseNotValidSplit_WithViolations` | Sleeper berth — invalid split — with violations |
+| `Example16_SleeperBerthProperUse_NoViolations` | Sleeper berth proper use — no violations |
+| `Example17_SleeperBerthPairWithFullRestSleeperSegment_NoViolations` | Sleeper berth pair with full rest segment — no violations |
+| `Example18_SleeperBerthMultiplePairings_NoViolations` | Sleeper berth multiple pairings — no violations |
+| `Example19_WaitingTimeAtWellSiteExample1_NoViolations` | Waiting time at well site (example 1) — no violations |
+| `Example20_WaitingTimeAtWellSiteExample2_NoViolations` | Waiting time at well site (example 2) — no violations |
+| `Example21_SplitBreakWithWellTime_WithViolations` | Split break with well time — with violations |
+| `Example22_OilfieldWithWellWaitTime_NoViolations` | Oilfield with well wait time — no violations |
+| `Example23_AgriculturalOperationException_WithViolations` | Agricultural operation exception — with violations |
+| `Example24_AgriculturalOperationException_NoViolations` | Agricultural operation exception — no violations |
+| `Example25_PassengerCarryingVehicles_NoViolations` | Passenger-carrying vehicles — no violations |
+| `Example26_PassengerCarryingVehicles_NoViolations` | Passenger-carrying vehicles — no violations |
+| `Example27_PassengerCarryingVehicles_WithViolations` | Passenger-carrying vehicles — with violations |
+| `Example28_PassengerCarryingVehicles_WithViolations` | Passenger-carrying vehicles — with violations |
+| `Example29_60_70_HourRule_WithViolations` | 60/70-hour rule — with violations |
+| `Example30_AdverseDrivingConditionsException_NoViolations` | Adverse driving conditions exception — no violations |
+
 ## Build
 
-This project uses [NUKE](https://nuke.build/) for its build system. The default CI target (run by Azure Pipelines) executes:
+This project uses [NUKE](https://nuke.build/) for its build system. The default CI target (run by GitHub Actions) executes:
 
 1. Clean → Restore → Compile
 2. Secret scan → Unit tests → Code coverage
