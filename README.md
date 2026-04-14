@@ -1,5 +1,9 @@
 # MeddlingIdiot.HOS.Auditor
 
+[![Build](https://github.com/meddlingidiot/MeddlingIdiot.Dispatcher/actions/workflows/build.yml/badge.svg)](https://github.com/meddlingidiot/Automation.Nuke.Components/actions/workflows/build.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/meddlingidiot/MeddlingIdiot.Dispatcher)](https://github.com/meddlingidiot/MeddlingIdiot.Dispatcher/releases)
+[![License](https://img.shields.io/github/license/meddlingidiot/MeddlingIdiot.Dispatcher)](LICENSE)
+
 A .NET library for auditing commercial driver compliance with FMCSA Hours of Service (HOS) regulations. Given a driver's duty status timeline, it detects violations across multiple US regulatory frameworks and returns structured violation results.
 
 ## Craftsmanship Note
