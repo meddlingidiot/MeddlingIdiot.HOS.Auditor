@@ -94,6 +94,7 @@ jobs:
         env:
           AZUREBLOBSASTOKEN: ${{ secrets.AZURE_BLOB_SAS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          CODECOV_TOKEN_MIHA: ${{ secrets.CODECOV_TOKEN_MIHA }}
 
       # ----------------------------------------------------------------
       # Publish: NuGet Packages
@@ -125,26 +126,6 @@ jobs:
             echo "Coverage file not found"
           }
       
-      #      - name: Create Coverage Badge
-      #        if: always() && github.ref == 'refs/heads/main'
-      #        uses: schneegans/dynamic-badges-action@v1.7.0
-      #        with:
-      #          auth: ${{ secrets.GIST_SECRET }}
-      #          gistID: YOUR_GIST_ID_HERE
-      #          filename: coverage-badge.json
-      #          label: coverage
-      #          message: ${{ steps.coverage.outputs.percentage }}%
-      #          color: ${{ steps.coverage.outputs.percentage >= 80 && 'brightgreen' || steps.coverage.outputs.percentage >= 60 && 'yellow' || 'red' }}
-      
-      #     - name: Upload Coverage Report to Codecov
-      #       uses: codecov/codecov-action@v4
-      #       if: always()
-      #       continue-on-error: true
-      #       with:
-      #         files: ${{ github.workspace }}/artifacts/coverage-report/Cobertura.xml
-      #         fail_ci_if_error: false
-      #         token: ${{ secrets.CODECOV_TOKEN }}
-
       # ----------------------------------------------------------------
       # Publish: Coverage Report Artifact
       # ----------------------------------------------------------------

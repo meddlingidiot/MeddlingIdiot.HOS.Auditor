@@ -1,3 +1,4 @@
+using System;
 using Nuke.Common;
 using Nuke.Common.ProjectModel;
 using Automation.Nuke.Components;
@@ -23,5 +24,7 @@ public class Build : GitHubActionsBuild, IHasGitHubPackages, IShowVersion, IClea
     string IHasGitHubPackages.GitHubOwner => "meddlingidiot";
     int IHasTests.MinCoverageThreshold => 80;
     bool ITestExecution.UseMicrosoftTestingPlatform => true; 
+    bool IHasTests.UploadToCodecov => true;
+    string IHasTests.CodecovToken => Environment.GetEnvironmentVariable("CODECOV_TOKEN_MIHA");
 
 }
