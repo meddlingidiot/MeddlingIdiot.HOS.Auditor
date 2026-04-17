@@ -18,7 +18,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
             _ruleDefinition = ruleDefinition;
         }
 
-        public void BuildTimeline()
+        public void BuildTimeline(CancellationToken cancellationToken = default)
         {
 //SETUP ------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
 
                 _navigator.Next();
                 _logger.Debug(LoggerCategories.RestBuilding, "Next(): " + _navigator.StartTimestamp + " duty: " + _navigator.DutyStatus);
-            } while (!_navigator.IsEndOfTime());
+            } while (!_navigator.IsEndOfTime() && !cancellationToken.IsCancellationRequested);
 
         }
     }

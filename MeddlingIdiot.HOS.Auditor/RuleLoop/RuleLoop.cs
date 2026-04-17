@@ -10,5 +10,5 @@ internal abstract class RuleLoop
     public abstract void Reset();
     public abstract void GlobalReset();
     public abstract void ThrowViolations(ThrowViolations firedAt);
-    public abstract void MainLoop(Moment startOfAuditWindow, Moment endOfAuditWindow);
+    public abstract void MainLoop(Moment startOfAuditWindow, Moment endOfAuditWindow, CancellationToken cancellationToken = default);
 }

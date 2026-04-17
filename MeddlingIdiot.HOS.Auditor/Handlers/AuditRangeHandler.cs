@@ -15,9 +15,9 @@ namespace MeddlingIdiot.HOS.Handlers
             _hosAuditor = hosAuditor;
         }
 
-        public Task<ViolationResults> Handle(AuditRangeQuery request, CancellationToken cancellationToken)
+        public Task<ViolationResults> Handle(AuditRangeQuery request, CancellationToken cancellationToken = default)
         {
-            return _hosAuditor.AuditRangeAsync( request);
+            return _hosAuditor.AuditRangeAsync(request, cancellationToken);
         }
     }
 }

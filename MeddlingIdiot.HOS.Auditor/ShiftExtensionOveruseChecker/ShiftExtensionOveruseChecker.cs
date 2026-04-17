@@ -22,7 +22,7 @@ namespace MeddlingIdiot.HOS.ShiftExtensionOveruseChecker
             _logger = logger;
         }
 
-        public void MainLoop(Moment startOfAuditWindow, Moment endOfAuditWindow)
+        public void MainLoop(Moment startOfAuditWindow, Moment endOfAuditWindow, CancellationToken cancellationToken = default)
         {
             var latestShiftExtensionStart = DateTime.MaxValue;
             var latestShiftExtensionEnd = DateTime.MaxValue;
@@ -82,7 +82,7 @@ namespace MeddlingIdiot.HOS.ShiftExtensionOveruseChecker
   
                     }
                 }
-            } while (!_navigator.IsEndOfShiftExtensions());
+            } while (!_navigator.IsEndOfShiftExtensions() && !cancellationToken.IsCancellationRequested);
             _logger.Debug(LoggerCategories.ShiftExtAudit, $"End Of Shift Extensions: {_navigator.StartTimestamp}");
 
         }

@@ -2,6 +2,6 @@
 {
     internal interface IRestTimelinePairer
     {
-        void PairSleeperSplits();
+        void PairSleeperSplits(CancellationToken cancellationToken = default);
     }
 }

@@ -20,17 +20,17 @@ namespace MeddlingIdiot.HOS
             _ruleDefinition = ruleDefinition;
         }
 
-        public Task<ViolationResults> AuditRangeAsync(AuditRangeQuery query)
+        public Task<ViolationResults> AuditRangeAsync(AuditRangeQuery query, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(AuditRange(query));
+            return Task.FromResult(AuditRange(query, cancellationToken));
         }
 
-        public Task<ViolationResults> AuditPointAsync(AuditPointQuery query)
+        public Task<ViolationResults> AuditPointAsync(AuditPointQuery query, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(AuditPoint(query));
+            return Task.FromResult(AuditPoint(query, cancellationToken));
         }
 
-        public ViolationResults AuditRange(AuditRangeQuery query)       
+        public ViolationResults AuditRange(AuditRangeQuery query, CancellationToken cancellationToken = default)       
         {
             //Calculate start and end of audit window
             query.Navigator.JumpTo(query.FinishTimestamp);
@@ -46,10 +46,10 @@ namespace MeddlingIdiot.HOS
                                               PreferredEndOfRest.Beginning,
                                               MoveTo.NewLocation);
 
-            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, query.Rules, query.IncludeDebugInfo);
+            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, query.Rules, query.IncludeDebugInfo, cancellationToken);
         }
 
-        public ViolationResults AuditPoint(AuditPointQuery query)
+        public ViolationResults AuditPoint(AuditPointQuery query, CancellationToken cancellationToken = default)
         {
             //Calculate start and end of audit window
             query.Navigator.JumpTo(query.Timestamp);
@@ -64,11 +64,11 @@ namespace MeddlingIdiot.HOS
                 PreferredEndOfRest.Beginning,
                 MoveTo.NewLocation);
 
-            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, AuditRules.AllRules, query.IncludeDebugInfo);
+            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, AuditRules.AllRules, query.IncludeDebugInfo, cancellationToken);
 
         }
 
-        private ViolationResults AuditNoLookBack(Moment startOfAuditWindow, Moment endOfAuditWindow, ITimelineNavigator navigator, IList<AuditRule> rulesToAudit, bool includeDebugInfo)
+        private ViolationResults AuditNoLookBack(Moment startOfAuditWindow, Moment endOfAuditWindow, ITimelineNavigator navigator, IList<AuditRule> rulesToAudit, bool includeDebugInfo, CancellationToken cancellationToken = default)
         {
             ILogger logger = new NullLogger();
             if (includeDebugInfo)
@@ -155,18 +155,18 @@ namespace MeddlingIdiot.HOS
                 restTimelinePairer = new RestTimelinePairerUsaBus(logger, _ruleDefinition, navigator);
             }
            
-            restTimelineBuilder.BuildTimeline();
-            restTimelinePairer.PairSleeperSplits();
+            restTimelineBuilder.BuildTimeline(cancellationToken);
+            restTimelinePairer.PairSleeperSplits(cancellationToken);
 
             var violationGateway = new ViolationGateway(logger);
             var sleeperSplitRuleLoop = new SleeperSplitRuleLoop(navigator, sleeperSplitRules, violationGateway, logger);
-            sleeperSplitRuleLoop.MainLoop(startOfAuditWindow, endOfAuditWindow);
+            sleeperSplitRuleLoop.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
             var dailyRuleLoop = new DailyRuleLoop(navigator, dailyRules, violationGateway, logger);
-            dailyRuleLoop.MainLoop(startOfAuditWindow, endOfAuditWindow);
+            dailyRuleLoop.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
             var shiftExtAudit = new ShiftExtensionOveruseChecker.ShiftExtensionOveruseChecker(navigator, _ruleDefinition, violationGateway, logger);
-            shiftExtAudit.MainLoop(startOfAuditWindow, endOfAuditWindow);
+            shiftExtAudit.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
             var violations = violationGateway.GetViolations();
             startOfAuditWindow = DontAllowClearViolationsToStartAtBeginningOfTime(navigator, startOfAuditWindow);
@@ -174,6 +174,9 @@ namespace MeddlingIdiot.HOS
             var clearViolationRange =
                 new ClearViolationRange(startOfAuditWindow.Timestamp, endOfAuditWindow.Timestamp);
 
+            if (cancellationToken.IsCancellationRequested)
+                return new ViolationResults([], clearViolationRange, logger.GetResults());
+            
             var violationResults = new ViolationResults(violations, clearViolationRange, logger.GetResults());
 
             return violationResults;

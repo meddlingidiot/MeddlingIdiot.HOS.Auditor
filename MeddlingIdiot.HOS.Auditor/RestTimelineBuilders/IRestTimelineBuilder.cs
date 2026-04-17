@@ -2,6 +2,6 @@
 {
     internal interface IRestTimelineBuilder
     {
-        void BuildTimeline();
+        void BuildTimeline(CancellationToken cancellationToken = default);
     }
 }
