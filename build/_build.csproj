@@ -11,7 +11,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Automation.Nuke.Components" Version="1.0.22" />
+    <PackageReference Include="Automation.Nuke.Components" Version="1.0.29" />
     <PackageReference Include="Nuke.Common" Version="10.1.0" />
   </ItemGroup>
   <ItemGroup>
