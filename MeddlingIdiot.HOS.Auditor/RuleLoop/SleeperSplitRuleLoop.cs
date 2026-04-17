@@ -28,7 +28,7 @@ namespace MeddlingIdiot.HOS.RuleLoop
             _rules.Accumulate(_navigator.StartTimestamp, _navigator.Length, _navigator.DutyStatus);
         }
 
-        public override void MainLoop(Moment startOfAuditWindow, Moment endOfAuditWindow)
+        public override void MainLoop(Moment startOfAuditWindow, Moment endOfAuditWindow, CancellationToken cancellationToken = default)
         {
             _logger.Debug(LoggerCategories.SleeperSplitLoop, "------------------------------------");
             _logger.Debug(LoggerCategories.SleeperSplitLoop, "Start of audit window: " + startOfAuditWindow.Timestamp);
@@ -83,9 +83,12 @@ namespace MeddlingIdiot.HOS.RuleLoop
                 }
 
 
-            } while (_navigator.Finish.Timestamp <= endOfAuditWindow.Timestamp);
+            } while (_navigator.Finish.Timestamp <= endOfAuditWindow.Timestamp && !cancellationToken.IsCancellationRequested);
 
-            ThrowViolations(Rules.ThrowViolations.AtEndOfAuditWindow);
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                ThrowViolations(Rules.ThrowViolations.AtEndOfAuditWindow);
+            }
 
         }
 

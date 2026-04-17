@@ -20,7 +20,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
             _ruleDefinition = ruleDefinition;
         }
 
-        public void PairSleeperSplits()
+        public void PairSleeperSplits(CancellationToken cancellationToken = default)
         {
             _logger.Debug(LoggerCategories.Pairing, "--- Pair Sleeper Splits ---------------------------------");
 
@@ -43,7 +43,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                 }
                 _navigator.Next();
                 _logger.Debug(LoggerCategories.Pairing, "Next(): " + _navigator.StartTimestamp + " duty: " + _navigator.DutyStatus);
-            } while (!_navigator.IsEndOfTime());
+            } while (!_navigator.IsEndOfTime() && !cancellationToken.IsCancellationRequested);
 
         }
 

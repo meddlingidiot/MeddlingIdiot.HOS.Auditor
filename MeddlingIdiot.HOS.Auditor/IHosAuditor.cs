@@ -5,8 +5,8 @@ namespace MeddlingIdiot.HOS;
 
 public interface IHosAuditor
 {
-    Task<ViolationResults> AuditRangeAsync(AuditRangeQuery query);
-    Task<ViolationResults> AuditPointAsync(AuditPointQuery query);
-    ViolationResults AuditRange(AuditRangeQuery query);
-    ViolationResults AuditPoint(AuditPointQuery query);
+    Task<ViolationResults> AuditRangeAsync(AuditRangeQuery query, CancellationToken cancellationToken);
+    Task<ViolationResults> AuditPointAsync(AuditPointQuery query, CancellationToken cancellationToken);
+    ViolationResults AuditRange(AuditRangeQuery query, CancellationToken cancellationToken = default);
+    ViolationResults AuditPoint(AuditPointQuery query, CancellationToken cancellationToken = default);
 }

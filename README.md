@@ -1,6 +1,7 @@
 # MeddlingIdiot.HOS.Auditor
 
 [![Build](https://github.com/meddlingidiot/MeddlingIdiot.HOS.Auditor/actions/workflows/build.yml/badge.svg)](https://github.com/meddlingidiot/MeddlingIdiot.HOS.Auditor/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/meddlingidiot/MeddlingIdiot.HOS.Auditor/branch/main/graph/badge.svg)](https://codecov.io/gh/meddlingidiot/MeddlingIdiot.HOS.Auditor)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/meddlingidiot/MeddlingIdiot.HOS.Auditor)](https://github.com/meddlingidiot/MeddlingIdiot.HOS.Auditor/releases)
 [![License](https://img.shields.io/github/license/meddlingidiot/MeddlingIdiot.HOS.Auditor)](LICENSE)
 
