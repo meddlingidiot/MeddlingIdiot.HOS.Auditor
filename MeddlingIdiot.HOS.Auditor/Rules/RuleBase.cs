@@ -144,9 +144,9 @@ namespace MeddlingIdiot.HOS.Rules
             {
                 //Special note: we use _options.Limit here because the extension is not "rule" change.
                 return new Violation(DriverIdNumberOfStart, TruckNumberOfStart, OverLimitStartTime,
-                    InViolationFinishTime - InViolationStartTime,
+                    OverLimitFinishTime - OverLimitStartTime,
                     InViolationStartTime, 
-                    InViolationTotalSize,
+                    InViolationFinishTime - InViolationStartTime,
                     _options.Limit, TimeInViolation, _options.Comment);
             }
 
