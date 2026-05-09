@@ -1,4 +1,5 @@
-﻿using MeddlingIdiot.HOS.Rules;
+﻿using MeddlingIdiot.HOS.Queries;
+using MeddlingIdiot.HOS.Rules;
 using MeddlingIdiot.HOS.TimelineNavigator;
 using MeddlingIdiot.HOS.TimelineNavigator.Moments;
 using MeddlingIdiot.HOS.TimelineNavigator.Utilities;
@@ -12,13 +13,27 @@ namespace MeddlingIdiot.HOS.RuleLoop
         private readonly IRuleList _rules;
         private readonly IViolationGateway _violationGateway;
         private readonly ILogger _logger;
+        private readonly List<DaySummary>? _daySummaries;
+        private readonly Func<DaySummary?>? _daySummaryFactory;
 
-        public DailyRuleLoop(ITimelineNavigator navigator, IRuleList ruleList, IViolationGateway violationGateway, ILogger logger)
+        public DailyRuleLoop(ITimelineNavigator navigator, IRuleList ruleList, IViolationGateway violationGateway, ILogger logger,
+            List<DaySummary>? daySummaries = null, Func<DaySummary?>? daySummaryFactory = null)
         {
             _navigator = navigator;
             _rules = ruleList;
             _violationGateway = violationGateway;
             _logger = logger;
+            _daySummaries = daySummaries;
+            _daySummaryFactory = daySummaryFactory;
+        }
+
+        private void SnapshotDay()
+        {
+            if (_daySummaries == null || _daySummaryFactory == null)
+                return;
+            var snapshot = _daySummaryFactory();
+            if (snapshot != null)
+                _daySummaries.Add(snapshot);
         }
 
         public override void Accumulate(TimeSpan toAccumulate, DutyStatus dutyStatus)
@@ -44,6 +59,7 @@ namespace MeddlingIdiot.HOS.RuleLoop
                 {
                     _logger.Debug(LoggerCategories.DailyLoop, "    new day.");
                     ThrowViolations(Rules.ThrowViolations.AtEndOfDay);
+                    SnapshotDay();
                     Reset();
                 }
 
@@ -57,6 +73,7 @@ namespace MeddlingIdiot.HOS.RuleLoop
             if (!cancellationToken.IsCancellationRequested)
             {
                 ThrowViolations(Rules.ThrowViolations.AtEndOfAuditWindow);
+                SnapshotDay();
             }
 
         }

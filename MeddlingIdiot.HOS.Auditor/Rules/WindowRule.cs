@@ -1,4 +1,5 @@
-﻿using MeddlingIdiot.HOS.TimelineNavigator;
+﻿using MeddlingIdiot.HOS.Queries;
+using MeddlingIdiot.HOS.TimelineNavigator;
 using MeddlingIdiot.HOS.TimelineNavigator.Utilities;
 using MeddlingIdiot.HOS.Violations;
 
@@ -75,6 +76,13 @@ namespace MeddlingIdiot.HOS.Rules
             AuditDay = _navigator.CurrentDay;
             UsedBeforeToday = _dailyRecap.GetTotalUsed(AuditDay, _options.DaysInWindow);
             UsedToday = TimeSpan.Zero;
+        }
+
+        internal DaySummary? CreateSnapshot()
+        {
+            if (AuditDay == DateTime.MinValue || AuditDay == DateTime.MaxValue)
+                return null;
+            return new DaySummary(AuditDay, UsedToday, TotalUsed, GetLimitSize(), _options.DaysInWindow, _dailyRecap.GetSnapshot());
         }
 
         public override Violation? GetViolation()

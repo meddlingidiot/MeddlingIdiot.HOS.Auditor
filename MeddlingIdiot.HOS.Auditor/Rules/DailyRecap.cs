@@ -46,6 +46,11 @@ namespace MeddlingIdiot.HOS.Rules
             return totalUsed;
         }
 
+        internal IReadOnlyDictionary<DateTime, TimeSpan> GetSnapshot()
+        {
+            return new Dictionary<DateTime, TimeSpan>(_dailyRecap);
+        }
+
         internal void Reset()
         {
             _dailyRecap.Clear();

@@ -10,7 +10,7 @@ namespace MeddlingIdiot.HOS.Queries
     public ITimelineNavigator Navigator { get; private set; }
     public List<AuditRule>? Rules { get; private set; }
     public bool IncludeDebugInfo { get; private set; }
-
+    public List<DaySummary> DaySummaries { get; } = new();
 
     public AuditPointQuery(DateTime timestamp,
         ITimelineNavigator navigator, List<AuditRule>? rulesToAudit = null, bool includeDebugInfo = false)

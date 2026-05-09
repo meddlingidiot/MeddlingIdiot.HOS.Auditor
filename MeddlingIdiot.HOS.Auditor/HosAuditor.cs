@@ -46,7 +46,7 @@ namespace MeddlingIdiot.HOS
                                               PreferredEndOfRest.Beginning,
                                               MoveTo.NewLocation);
 
-            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, query.Rules, query.IncludeDebugInfo, cancellationToken);
+            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, query.Rules, query.IncludeDebugInfo, query.DaySummaries, cancellationToken);
         }
 
         public ViolationResults AuditPoint(AuditPointQuery query, CancellationToken cancellationToken = default)
@@ -64,11 +64,11 @@ namespace MeddlingIdiot.HOS
                 PreferredEndOfRest.Beginning,
                 MoveTo.NewLocation);
 
-            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, AuditRules.AllRules, query.IncludeDebugInfo, cancellationToken);
+            return AuditNoLookBack(startOfAuditWindow, endOfAuditWindow, query.Navigator, AuditRules.AllRules, query.IncludeDebugInfo, query.DaySummaries, cancellationToken);
 
         }
 
-        private ViolationResults AuditNoLookBack(Moment startOfAuditWindow, Moment endOfAuditWindow, ITimelineNavigator navigator, IList<AuditRule> rulesToAudit, bool includeDebugInfo, CancellationToken cancellationToken = default)
+        private ViolationResults AuditNoLookBack(Moment startOfAuditWindow, Moment endOfAuditWindow, ITimelineNavigator navigator, IList<AuditRule> rulesToAudit, bool includeDebugInfo, List<DaySummary> daySummaries, CancellationToken cancellationToken = default)
         {
             ILogger logger = new NullLogger();
             if (includeDebugInfo)
@@ -162,7 +162,10 @@ namespace MeddlingIdiot.HOS
             var sleeperSplitRuleLoop = new SleeperSplitRuleLoop(navigator, sleeperSplitRules, violationGateway, logger);
             sleeperSplitRuleLoop.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
-            var dailyRuleLoop = new DailyRuleLoop(navigator, dailyRules, violationGateway, logger);
+            Func<DaySummary?>? snapshotFactory = rulesToAudit.Contains(AuditRule.Window)
+                ? () => windowRule.CreateSnapshot()
+                : null;
+            var dailyRuleLoop = new DailyRuleLoop(navigator, dailyRules, violationGateway, logger, daySummaries, snapshotFactory);
             dailyRuleLoop.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
             var shiftExtAudit = new ShiftExtensionOveruseChecker.ShiftExtensionOveruseChecker(navigator, _ruleDefinition, violationGateway, logger);
