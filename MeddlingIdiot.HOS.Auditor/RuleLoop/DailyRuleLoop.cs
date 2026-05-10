@@ -1,4 +1,7 @@
-﻿using MeddlingIdiot.HOS.Queries;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using MeddlingIdiot.HOS.Queries;
 using MeddlingIdiot.HOS.Rules;
 using MeddlingIdiot.HOS.TimelineNavigator;
 using MeddlingIdiot.HOS.TimelineNavigator.Moments;
@@ -35,9 +38,9 @@ namespace MeddlingIdiot.HOS.RuleLoop
             if (snapshot == null)
                 return;
             var existing = _daySummaries.FindIndex(s => s.Date == snapshot.Date);
-            if (existing == 0 && (snapshot.HoursInWindow != TimeSpan.Zero || snapshot.DailyHours[snapshot.Date] != TimeSpan.Zero))
+            if (existing >= 0 && (snapshot.HoursInWindow != TimeSpan.Zero || snapshot.DailyHours[snapshot.Date] != TimeSpan.Zero))
                 _daySummaries[existing] = snapshot;
-            else 
+            else if (existing < 0)
                 _daySummaries.Add(snapshot);
         }
 

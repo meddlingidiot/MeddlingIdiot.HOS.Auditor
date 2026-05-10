@@ -1,4 +1,5 @@
-﻿using MeddlingIdiot.HOS.Queries;
+﻿using System;
+using MeddlingIdiot.HOS.Queries;
 using MeddlingIdiot.HOS.TimelineNavigator;
 using MeddlingIdiot.HOS.TimelineNavigator.Utilities;
 using MeddlingIdiot.HOS.Violations;
@@ -66,8 +67,8 @@ namespace MeddlingIdiot.HOS.Rules
 
         public override void GlobalReset()
         {
-            base.GlobalReset();
             _dailyRecap.Reset();
+            base.GlobalReset();
         }
 
         public override void Reset() // Could be called NewDay()
