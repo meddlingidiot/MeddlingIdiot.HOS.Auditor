@@ -35,7 +35,7 @@ namespace MeddlingIdiot.HOS.RuleLoop
             if (snapshot == null)
                 return;
             var existing = _daySummaries.FindIndex(s => s.Date == snapshot.Date);
-            if (existing >= 0 && _daySummaries[existing].HoursForDay == TimeSpan.Zero)
+            if (existing >= 0 && snapshot.DailyHours.ContainsKey(snapshot.Date) && snapshot.DailyHours[snapshot.Date] != TimeSpan.Zero)
                 _daySummaries[existing] = snapshot;
             else if (existing < 0)
                 _daySummaries.Add(snapshot);
