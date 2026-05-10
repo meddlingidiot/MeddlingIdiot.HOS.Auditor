@@ -7,6 +7,8 @@ namespace MeddlingIdiot.HOS.Queries
         public TimeSpan HoursInWindow { get; }
         public TimeSpan HoursAvailableToday { get; }
         public TimeSpan HoursAvailableTomorrow { get; }
+        public TimeSpan WindowLimit { get; }
+        public int DaysInWindow { get; }
         internal IReadOnlyDictionary<DateTime, TimeSpan> DailyHours { get; }
 
         internal DaySummary(DateTime date, TimeSpan hoursForDay, TimeSpan hoursInWindow,
@@ -16,6 +18,8 @@ namespace MeddlingIdiot.HOS.Queries
             Date = date;
             HoursForDay = hoursForDay;
             HoursInWindow = hoursInWindow;
+            WindowLimit = windowLimit;
+            DaysInWindow = daysInWindow;
             DailyHours = dailyHours;
 
             HoursAvailableToday = hoursInWindow >= windowLimit
