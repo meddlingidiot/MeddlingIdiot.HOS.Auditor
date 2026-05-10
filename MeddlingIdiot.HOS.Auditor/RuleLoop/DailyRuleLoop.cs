@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using MeddlingIdiot.HOS.Queries;
+﻿using MeddlingIdiot.HOS.Queries;
 using MeddlingIdiot.HOS.Rules;
 using MeddlingIdiot.HOS.TimelineNavigator;
 using MeddlingIdiot.HOS.TimelineNavigator.Moments;
@@ -40,7 +37,7 @@ namespace MeddlingIdiot.HOS.RuleLoop
             var existing = _daySummaries.FindIndex(s => s.Date == snapshot.Date);
             if (existing >= 0 && (snapshot.HoursInWindow != TimeSpan.Zero || snapshot.DailyHours[snapshot.Date] != TimeSpan.Zero))
                 _daySummaries[existing] = snapshot;
-            else if (existing < 0)
+            else if(existing < 0)
                 _daySummaries.Add(snapshot);
         }
 
@@ -68,6 +65,7 @@ namespace MeddlingIdiot.HOS.RuleLoop
                 {
                     _logger.Debug(LoggerCategories.DailyLoop, "   global reset.");
                     ThrowViolations(Rules.ThrowViolations.AtRestAccumulated);
+                    SnapshotDay();
                     GlobalReset();
                 }
 
