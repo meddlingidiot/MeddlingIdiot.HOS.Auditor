@@ -32,7 +32,12 @@ namespace MeddlingIdiot.HOS.RuleLoop
             if (_daySummaries == null || _daySummaryFactory == null)
                 return;
             var snapshot = _daySummaryFactory();
-            if (snapshot != null)
+            if (snapshot == null)
+                return;
+            var existing = _daySummaries.FindIndex(s => s.Date == snapshot.Date);
+            if (existing >= 0 && _daySummaries[existing].HoursForDay == TimeSpan.Zero)
+                _daySummaries[existing] = snapshot;
+            else if (existing < 0)
                 _daySummaries.Add(snapshot);
         }
 
