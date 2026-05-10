@@ -35,9 +35,9 @@ namespace MeddlingIdiot.HOS.RuleLoop
             if (snapshot == null)
                 return;
             var existing = _daySummaries.FindIndex(s => s.Date == snapshot.Date);
-            if (existing >= 0 && snapshot.DailyHours.ContainsKey(snapshot.Date) && snapshot.DailyHours[snapshot.Date] != TimeSpan.Zero)
+            if (existing == 0 && snapshot.DailyHours.ContainsKey(snapshot.Date) && snapshot.DailyHours[snapshot.Date] != TimeSpan.Zero)
                 _daySummaries[existing] = snapshot;
-            else if (existing < 0)
+            else 
                 _daySummaries.Add(snapshot);
         }
 
@@ -53,19 +53,19 @@ namespace MeddlingIdiot.HOS.RuleLoop
             _navigator.JumpTo(startOfAuditWindow.Timestamp);
             do
             {
-                if (_navigator.CurrentRestMoment.IsGlobalReset)
-                {
-                    _logger.Debug(LoggerCategories.DailyLoop, "   global reset.");
-                    ThrowViolations(Rules.ThrowViolations.AtRestAccumulated);
-                    GlobalReset();
-                }
-
                 if (_navigator.IsStartOfDay)
                 {
                     _logger.Debug(LoggerCategories.DailyLoop, "    new day.");
                     ThrowViolations(Rules.ThrowViolations.AtEndOfDay);
                     SnapshotDay();
                     Reset();
+                }
+
+                if (_navigator.CurrentRestMoment.IsGlobalReset)
+                {
+                    _logger.Debug(LoggerCategories.DailyLoop, "   global reset.");
+                    ThrowViolations(Rules.ThrowViolations.AtRestAccumulated);
+                    GlobalReset();
                 }
 
                 _logger.Debug(LoggerCategories.DailyLoop, _navigator.CurrentDutyStatusChangeMoment.ToString());
