@@ -33,7 +33,7 @@
             return $"{ViolationType} {OverLimitStartTime} {FormatHours(TotalSize)} {FormatHours(Limit)} {FormatHours(TimeInViolation)} {Comment}";
         }
 
-        private static string FormatHours(TimeSpan ts) =>
+        public static string FormatHours(TimeSpan ts) =>
             $"{(int)ts.TotalHours}:{ts.Minutes:D2}:{ts.Seconds:D2}";
         
         
