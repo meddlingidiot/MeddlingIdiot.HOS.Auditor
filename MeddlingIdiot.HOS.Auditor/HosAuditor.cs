@@ -84,14 +84,14 @@ namespace MeddlingIdiot.HOS
                 _ruleDefinition.AdverseConditionsLimitExtension,
                 _ruleDefinition.MinBreakSize,
                 DutyStatuses.AllButDrivingDutyStatuses,
-                $"Unbroken Driving {_ruleDefinition.MaxUnbrokenDrivingLimit} hour Limit", null, null, 
+                $"Unbroken Driving {Violation.FormatHours(_ruleDefinition.MaxUnbrokenDrivingLimit)} hour Limit", null, null, 
                 ThrowViolationsAt.DutyStatusChange);
             var drivingRuleOptions = new StandardRuleOptions(
                 drivingDutyStatus, 
                 drivingDutyStatus, 
                 _ruleDefinition.MinDrivingLimit,
                 _ruleDefinition.AdverseConditionsLimitExtension,
-                $"Over {_ruleDefinition.MinDrivingLimit} hour Limit", null, null,
+                $"Over {Violation.FormatHours(_ruleDefinition.MinDrivingLimit)} hour Limit", null, null,
                 ThrowViolationsAt.RestAccumulated);
             var shiftRuleOptions = new ShiftRuleOptions(
                 DutyStatuses.AllNormalDutyStatuses, 
@@ -100,7 +100,7 @@ namespace MeddlingIdiot.HOS
                 _ruleDefinition.MinShiftLimit,
                 _ruleDefinition.AdverseConditionsLimitExtension,
                 _ruleDefinition.ShiftExtensionSize,
-                $"Over {_ruleDefinition.MinShiftLimit} hour Limit",
+                $"Over {Violation.FormatHours(_ruleDefinition.MinShiftLimit)} hour Limit",
                 () =>
                 {
                     if (DutyStatuses.RestDutyStatuses.Contains(navigator.DutyStatus))
@@ -113,7 +113,7 @@ namespace MeddlingIdiot.HOS
                 drivingDutyStatus,
                 _ruleDefinition.MinOnDutyLimit,
                 _ruleDefinition.AdverseConditionsLimitExtension,
-                $"Over {_ruleDefinition.MinOnDutyLimit} hour Limit", null, null,
+                $"Over {Violation.FormatHours(_ruleDefinition.MinOnDutyLimit)} hour Limit", null, null,
                 ThrowViolationsAt.RestAccumulated);
             var windowRuleOptions = new WindowRuleOptions(
                     DutyStatuses.WorkingDutyStatuses, 
@@ -121,7 +121,7 @@ namespace MeddlingIdiot.HOS
                     _ruleDefinition.NumberOfDaysInWindow,
                     _ruleDefinition.MinWindowLimit,
                     TimeSpan.Zero,
-                    $"Over {_ruleDefinition.MinWindowLimit} hour Limit", null, null,
+                    $"Over {Violation.FormatHours(_ruleDefinition.MinWindowLimit)} hour Limit", null, null,
                     ThrowViolationsAt.EndOfDay);
 
             var unbrokenDrivingRule = new UnbrokenRule(navigator, unbrokenDrivingRuleOptions, logger);
