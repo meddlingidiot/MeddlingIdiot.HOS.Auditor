@@ -30,8 +30,11 @@
 
         public override string ToString()
         {
-            return $"{ViolationType} {OverLimitStartTime} {TotalSize} {Limit} {TimeInViolation} {Comment}";
+            return $"{ViolationType} {OverLimitStartTime} {FormatHours(TotalSize)} {FormatHours(Limit)} {FormatHours(TimeInViolation)} {Comment}";
         }
+
+        private static string FormatHours(TimeSpan ts) =>
+            $"{(int)ts.TotalHours}:{ts.Minutes:D2}:{ts.Seconds:D2}";
         
         
     }
