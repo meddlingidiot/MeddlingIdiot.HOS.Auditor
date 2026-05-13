@@ -30,8 +30,10 @@ namespace MeddlingIdiot.HOS
             return Task.FromResult(AuditPoint(query, cancellationToken));
         }
 
-        public ViolationResults AuditRange(AuditRangeQuery query, CancellationToken cancellationToken = default)       
+        public ViolationResults AuditRange(AuditRangeQuery query, CancellationToken cancellationToken = default)
         {
+            query.RestTargets = BuildRestTargets();
+
             //Calculate start and end of audit window
             query.Navigator.JumpTo(query.FinishTimestamp);
             var endOfAuditWindow = query.Navigator.FindRest(
@@ -51,6 +53,8 @@ namespace MeddlingIdiot.HOS
 
         public ViolationResults AuditPoint(AuditPointQuery query, CancellationToken cancellationToken = default)
         {
+            query.RestTargets = BuildRestTargets();
+
             //Calculate start and end of audit window
             query.Navigator.JumpTo(query.Timestamp);
             var endOfAuditWindow = query.Navigator.FindRest(
@@ -194,6 +198,19 @@ namespace MeddlingIdiot.HOS
                 return navigator.IsBeginningOfTime() ? endOfAuditWindow : navigator.Start;
             }
             return endOfAuditWindow;
+        }
+
+        private RestTargets BuildRestTargets()
+        {
+            var sleeper = new SleeperRestTargets(
+                _ruleDefinition.MinSplitRest,
+                _ruleDefinition.MinPrimarySplitRest,
+                _ruleDefinition.MinFullRest,
+                _ruleDefinition.GlobalReset);
+            var offDuty = new OffDutyRestTargets(
+                _ruleDefinition.MinFullRest,
+                _ruleDefinition.GlobalReset);
+            return new RestTargets(sleeper, offDuty);
         }
 
         private Moment DontAllowClearViolationsToStartAtBeginningOfTime(ITimelineNavigator navigator, Moment startOfAuditWindow)

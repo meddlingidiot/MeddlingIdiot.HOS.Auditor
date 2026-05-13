@@ -11,6 +11,7 @@ namespace MeddlingIdiot.HOS.Queries
     public List<AuditRule>? Rules { get; private set; }
     public bool IncludeDebugInfo { get; private set; }
     public List<DaySummary> DaySummaries { get; } = new();
+    public RestTargets? RestTargets { get; internal set; }
 
     public AuditPointQuery(DateTime timestamp,
         ITimelineNavigator navigator, List<AuditRule>? rulesToAudit = null, bool includeDebugInfo = false)
