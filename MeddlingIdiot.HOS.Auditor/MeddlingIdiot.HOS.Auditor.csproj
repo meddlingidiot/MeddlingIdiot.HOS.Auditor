@@ -25,4 +25,8 @@
 	  <PackageReference Include="MeddlingIdiot.HOS.TimelineNavigator" Version="1.0.11" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="ReferenceOnly\" />
+	</ItemGroup>
+
 </Project>

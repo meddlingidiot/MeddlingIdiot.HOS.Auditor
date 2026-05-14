@@ -172,6 +172,8 @@ namespace MeddlingIdiot.HOS
             var shiftExtAudit = new ShiftExtensionOveruseChecker.ShiftExtensionOveruseChecker(navigator, _ruleDefinition, violationGateway, logger);
             shiftExtAudit.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
+            AddProjectedRestMomentsForFinalRestSegment(navigator, endOfAuditWindow);
+
             var violations = violationGateway.GetViolations();
             startOfAuditWindow = DontAllowClearViolationsToStartAtBeginningOfTime(navigator, startOfAuditWindow);
             endOfAuditWindow = DontAllowClearViolationsToEndAtEndOfTime(navigator, endOfAuditWindow);
@@ -184,6 +186,41 @@ namespace MeddlingIdiot.HOS
             var violationResults = new ViolationResults(violations, clearViolationRange, logger.GetResults(), daySummaries, navigator.GetRestTimelineMoments());
 
             return violationResults;
+        }
+
+        private void AddProjectedRestMomentsForFinalRestSegment(ITimelineNavigator navigator, Moment endOfAuditWindow)
+        {
+            navigator.JumpTo(endOfAuditWindow.Timestamp);
+            if (navigator.IsEndOfTime())
+                navigator.Prior();
+            if (navigator.IsBeginningOfTime() || !DutyStatuses.AllRestDutyStatuses.Contains(navigator.DutyStatus))
+                return;
+
+            var restStart = navigator.StartTimestamp;
+            var driverIdNumber = navigator.DriverIdNumber;
+            var truckNumber = navigator.TruckNumber;
+
+            while (!navigator.IsBeginningOfTime())
+            {
+                navigator.Prior();
+                if (!DutyStatuses.AllRestDutyStatuses.Contains(navigator.DutyStatus))
+                    break;
+                restStart = navigator.StartTimestamp;
+                driverIdNumber = navigator.DriverIdNumber;
+                truckNumber = navigator.TruckNumber;
+            }
+
+            var splitReachedAt = restStart.Add(_ruleDefinition.MinSplitRest);
+            navigator.Upsert(new RestMoment(splitReachedAt, splitReachedAt, TimeSpan.Zero, false, false, true, false, false, driverIdNumber, truckNumber));
+
+            var primaryReachedAt = restStart.Add(_ruleDefinition.MinPrimarySplitRest);
+            navigator.Upsert(new RestMoment(primaryReachedAt, primaryReachedAt, TimeSpan.Zero, false, false, true, true, false, driverIdNumber, truckNumber));
+
+            var fullRestReachedAt = restStart.Add(_ruleDefinition.MinFullRest);
+            navigator.Upsert(new RestMoment(fullRestReachedAt, fullRestReachedAt, TimeSpan.Zero, false, true, false, false, false, driverIdNumber, truckNumber));
+
+            var globalResetReachedAt = restStart.Add(_ruleDefinition.GlobalReset);
+            navigator.Upsert(new RestMoment(globalResetReachedAt, globalResetReachedAt, TimeSpan.Zero, true, true, false, false, false, driverIdNumber, truckNumber));
         }
 
         private Moment DontAllowClearViolationsToEndAtEndOfTime(ITimelineNavigator navigator, Moment endOfAuditWindow)
