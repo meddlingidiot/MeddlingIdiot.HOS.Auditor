@@ -23,27 +23,27 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
 //SETUP ------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------
 
-            var splitRestOptions = new RestAccumulatorOptions(_ruleDefinition.SplitRestDutyStatuses, _ruleDefinition.MinSplitRest, _ruleDefinition.MinFullRest, ((startTimestamp, finishTimestamp, driverIdNumber,
+            var splitRestOptions = new RestAccumulatorOptions(_ruleDefinition.SplitRestDutyStatuses, _ruleDefinition.MinSplitRest, _ruleDefinition.MinFullRest, ((startTimestamp, limitReachedTimestamp, finishTimestamp, driverIdNumber,
                 truckNumber) =>
             {
                 //Create and insert splitRestMoment.
                 _logger.Debug(LoggerCategories.RestBuilding, $"Add Moments at (start): {startTimestamp} and : {finishTimestamp}.");
-                _navigator.Upsert(new RestMoment(startTimestamp, finishTimestamp - startTimestamp, false, false, true, true, false, driverIdNumber, truckNumber));
-                _navigator.Upsert(new RestMoment(finishTimestamp, TimeSpan.Zero,false, false, false, false, false, driverIdNumber, truckNumber));
+                _navigator.Upsert(new RestMoment(startTimestamp, limitReachedTimestamp, finishTimestamp - startTimestamp, false, false, true, true, false, driverIdNumber, truckNumber));
+                _navigator.Upsert(new RestMoment(finishTimestamp, finishTimestamp, TimeSpan.Zero,false, false, false, false, false, driverIdNumber, truckNumber));
             }));
-            var fullRestOptions = new RestAccumulatorOptions(_ruleDefinition.FullRestDutyStatuses, _ruleDefinition.MinFullRest, _ruleDefinition.GlobalReset,((startTimestamp, finishTimestamp, driverIdNumber,
+            var fullRestOptions = new RestAccumulatorOptions(_ruleDefinition.FullRestDutyStatuses, _ruleDefinition.MinFullRest, _ruleDefinition.GlobalReset,((startTimestamp, limitReachedTimestamp, finishTimestamp, driverIdNumber,
                 truckNumber) =>
             {
                 _logger.Debug(LoggerCategories.RestBuilding, "(full rest) Add Moment: " + startTimestamp);
-                _navigator.Upsert(new RestMoment(startTimestamp, finishTimestamp - startTimestamp, false, true, false, false, false, driverIdNumber, truckNumber));
-                _navigator.Upsert(new RestMoment(finishTimestamp, TimeSpan.Zero, false, false, false, false, false, driverIdNumber, truckNumber));
+                _navigator.Upsert(new RestMoment(startTimestamp, limitReachedTimestamp, finishTimestamp - startTimestamp, false, true, false, false, false, driverIdNumber, truckNumber));
+                _navigator.Upsert(new RestMoment(finishTimestamp, finishTimestamp, TimeSpan.Zero, false, false, false, false, false, driverIdNumber, truckNumber));
             }));
-            var globalResetOptions = new RestAccumulatorOptions(_ruleDefinition.GlobalResetDutyStatuses, _ruleDefinition.GlobalReset, TimeSpan.MaxValue, ((startTimestamp, finishTimestamp, driverIdNumber,
+            var globalResetOptions = new RestAccumulatorOptions(_ruleDefinition.GlobalResetDutyStatuses, _ruleDefinition.GlobalReset, TimeSpan.MaxValue, ((startTimestamp, limitReachedTimestamp, finishTimestamp, driverIdNumber,
                 truckNumber) =>
             {
                 _logger.Debug(LoggerCategories.RestBuilding, "(global reset) Add Moment: " + startTimestamp);
-                _navigator.Upsert(new RestMoment(startTimestamp, finishTimestamp - startTimestamp, true, true, false, false, false, driverIdNumber, truckNumber));
-                _navigator.Upsert(new RestMoment(finishTimestamp, TimeSpan.Zero, false, false, false, false, false, driverIdNumber, truckNumber));
+                _navigator.Upsert(new RestMoment(startTimestamp, limitReachedTimestamp, finishTimestamp - startTimestamp, true, true, false, false, false, driverIdNumber, truckNumber));
+                _navigator.Upsert(new RestMoment(finishTimestamp, finishTimestamp, TimeSpan.Zero, false, false, false, false, false, driverIdNumber, truckNumber));
             }));
 
 //MAIN LOOP-----------------------------------------------------------------------

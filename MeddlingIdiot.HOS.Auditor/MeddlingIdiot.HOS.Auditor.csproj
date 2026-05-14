@@ -22,7 +22,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="MeddlingIdiot.Dispatcher" Version="1.0.7" />
-	  <PackageReference Include="MeddlingIdiot.HOS.TimelineNavigator" Version="1.0.7" />
+	  <PackageReference Include="MeddlingIdiot.HOS.TimelineNavigator" Version="1.0.11" />
 	</ItemGroup>
 
 </Project>

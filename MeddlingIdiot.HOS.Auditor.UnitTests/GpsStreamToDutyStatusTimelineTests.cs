@@ -115,8 +115,8 @@ public class GpsStreamToDutyStatusTimelineTests
         // Note: the production code passes gps.DriverIdNumber as the 'comment' argument
         // and gps.TruckNumber as the 'driverIdNumber' argument of DutyStatusChangeMoment.
         var navigator = new TimelineNavigator.TimelineNavigator(new());
-        navigator.Add(new GpsMoment(DateTime.Parse("1/1/2024 08:00:00"), 0.0, 0.0, "D123", "T456"));
-        navigator.Add(new GpsMoment(DateTime.Parse("1/1/2024 09:00:00"), 0.1, 0.1, "D123", "T456"));
+        navigator.Add(new GpsMoment(DateTime.Parse("1/1/2024 08:00:00"), 0.0, 0.0, null, null, null, null, "D123", "T456"));
+        navigator.Add(new GpsMoment(DateTime.Parse("1/1/2024 09:00:00"), 0.1, 0.1, null, null, null, null, "D123", "T456"));
 
         var result = _sut.ConvertGpsTimelineToDutyStatusTimeline(navigator);
 

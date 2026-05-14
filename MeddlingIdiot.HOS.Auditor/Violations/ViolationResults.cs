@@ -1,4 +1,5 @@
 ﻿using MeddlingIdiot.HOS.Queries;
+using MeddlingIdiot.HOS.TimelineNavigator.Moments;
 
 namespace MeddlingIdiot.HOS.Violations
 {
@@ -9,16 +10,16 @@ namespace MeddlingIdiot.HOS.Violations
         public string DebugInfo { get; private set; }
 
         public List<DaySummary> DaySummaries { get; } = new();
-        public RestTargets? RestTargets { get; internal set; }
-
-        public ViolationResults(List<Violation> violations, ClearViolationRange clearViolationRange, string debugInfo, List<DaySummary>? daySummaries = null, RestTargets? restTargets = null)
+        public List<RestMoment> RestMoments { get; } = new();
+        
+        public ViolationResults(List<Violation> violations, ClearViolationRange clearViolationRange, string debugInfo, List<DaySummary>? daySummaries = null, List<RestMoment>? restMoments = null)
         {
             Violations = violations;
             ClearViolationRange = clearViolationRange;
             DebugInfo = debugInfo;
             
             DaySummaries = daySummaries ?? DaySummaries;
-            RestTargets = restTargets;
+            RestMoments = restMoments ?? RestMoments;
         }
 
 

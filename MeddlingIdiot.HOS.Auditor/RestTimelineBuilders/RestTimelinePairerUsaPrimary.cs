@@ -39,6 +39,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                     {
                         _logger.Debug(LoggerCategories.Pairing, "Primary Rest Found At:  " + _navigator.CurrentRestMoment.Timestamp);
                         _navigator.Upsert(new RestMoment(_navigator.CurrentRestMoment.Timestamp,
+                            _navigator.CurrentRestMoment.ExactTimestamp,
                             _navigator.CurrentRestMoment.Duration,
                             false, false,
                             true,
@@ -100,6 +101,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                         "    FOUND Secondary Rest Found At:  " + _navigator.CurrentRestMoment.Timestamp);
                     var currentSplitMoment = _navigator.CurrentRestMoment;
                     var splitRestMoment = new RestMoment(currentSplitMoment.Timestamp,
+                        currentSplitMoment.ExactTimestamp,
                         currentSplitMoment.Duration,
                         false, false,
                         true, //IsQualified
@@ -160,6 +162,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                         "    FOUND Secondary Rest Found At:  " + _navigator.CurrentRestMoment.Timestamp);
                     var currentSplitMoment = _navigator.CurrentRestMoment;
                     var pairedRestMoment = new RestMoment(currentSplitMoment.Timestamp,
+                        currentSplitMoment.ExactTimestamp,
                         currentSplitMoment.Duration,
                         false, false, true,
                         currentSplitMoment.IsPrimary,

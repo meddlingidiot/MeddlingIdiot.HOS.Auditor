@@ -181,7 +181,7 @@ namespace MeddlingIdiot.HOS
             if (cancellationToken.IsCancellationRequested)
                 return new ViolationResults([], clearViolationRange, logger.GetResults());
             
-            var violationResults = new ViolationResults(violations, clearViolationRange, logger.GetResults(), daySummaries, BuildRestTargets());
+            var violationResults = new ViolationResults(violations, clearViolationRange, logger.GetResults(), daySummaries, navigator.GetRestTimelineMoments());
 
             return violationResults;
         }

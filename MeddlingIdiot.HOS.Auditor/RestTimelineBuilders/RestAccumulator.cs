@@ -13,6 +13,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
         public TimeSpan TotalRestSize { get; private set; }
         public TimeSpan TotalAccumulatedSize { get; private set; }
         public DateTime StartTime { get; private set; }
+        public DateTime LimitReachedTimestamp { get; private set; }
         public string? DriverIdNumberOfStart { get; private set; }
         public string? TruckNumberOfStart { get; private set; }
 
@@ -30,9 +31,12 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
         {
             if (_options.DutyStatusesThatAccumulateTime.Contains(dutyStatus))
             {
+                var sizeBeforeAccumulation = TotalAccumulatedSize;
                 TotalAccumulatedSize += toAccumulate;
                 StartTime = SetStartTimeIfOnFirstSegment(startTimestamp, StartTime);
 
+                if (LimitReachedTimestamp == DateTime.MaxValue && TotalAccumulatedSize >= _options.LimitSize)
+                    LimitReachedTimestamp = startTimestamp.Add(_options.LimitSize - sizeBeforeAccumulation);
             }
 
             if (_restDutyStatuses.Contains(dutyStatus))
@@ -51,7 +55,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                         throw new ArgumentOutOfRangeException(nameof(StartTime));
 
                     _logger.Debug(LoggerCategories.Accumulators, _options.LimitSize + " - Limit Reached!");
-                    _options.OnLimitReached?.Invoke(StartTime, StartTime.Add(TotalAccumulatedSize), DriverIdNumberOfStart, TruckNumberOfStart);
+                    _options.OnLimitReached?.Invoke(StartTime, LimitReachedTimestamp, StartTime.Add(TotalAccumulatedSize), DriverIdNumberOfStart, TruckNumberOfStart);
 
                 }
                 Reset();
@@ -65,6 +69,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
             TotalAccumulatedSize = TimeSpan.Zero;
             TotalRestSize = TimeSpan.Zero;
             StartTime = DateTime.MaxValue;
+            LimitReachedTimestamp = DateTime.MaxValue;
             DriverIdNumberOfStart = null;
             TruckNumberOfStart = null;
         }
