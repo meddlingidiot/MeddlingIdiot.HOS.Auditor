@@ -36,7 +36,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
             var primaryOptions = new RestAccumulatorOptions(_ruleDefinition.PrimaryRestDutyStatuses, _ruleDefinition.MinPrimarySplitRest, _ruleDefinition.MinFullRest, ((startTimestamp, limitReachedTimestamp, finishTimestamp, driverIdNumber,
                 truckNumber) =>
             {
-                //Create and insert splitRestMoment.
+                //Create and insert primary splitRestMoment.
                 _logger.Debug(LoggerCategories.RestBuilding, $"Add Moments at (start): {startTimestamp} and : {finishTimestamp}.");
                 _navigator.Upsert(new RestMoment(startTimestamp, limitReachedTimestamp, finishTimestamp - startTimestamp, false, false, true, true, false, driverIdNumber, truckNumber));
                 _navigator.Upsert(new RestMoment(finishTimestamp, null, TimeSpan.Zero,false, false, false, false, false, driverIdNumber, truckNumber));
