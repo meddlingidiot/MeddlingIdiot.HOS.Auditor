@@ -197,4 +197,60 @@ public class HosAuditorTests
 
         await Assert.That(violationResult.DebugInfo).IsEmpty();
     }
+
+    [Test]
+    public async Task AuditRange_AddsProjectedSplitPairingMoments_ForPrimaryRules()
+    {
+        var sleeperStart = DateTime.Parse("8/24/2023 08:00:00");
+        var navigator = new TimelineNavigator.TimelineNavigator(new());
+        navigator.Add(new DutyStatusChangeMoment(DateTime.Parse("8/24/2023"), DutyStatus.OnDuty));
+        navigator.Add(new DutyStatusChangeMoment(sleeperStart, DutyStatus.Sleeper));
+        navigator.Add(new DutyStatusChangeMoment(DateTime.Parse("8/24/2023 16:00:00"), DutyStatus.OnDuty));
+        navigator.Add(new DutyStatusChangeMoment(DateTime.Parse("8/24/2023 20:00:00"), DutyStatus.OffDuty));
+
+        var sut = new HosAuditor(new Us60HrRuleDefinition());
+        var violationResult = sut.AuditRange(new AuditRangeQuery(
+            DateTime.Parse("8/24/2023"),
+            DateTime.Parse("8/24/2023 20:00:00"),
+            navigator,
+            AuditRules.AllRules));
+
+        await Assert.That(violationResult.RestMoments.Any(m =>
+            m.Timestamp == sleeperStart.AddHours(3) &&
+            m.ExactTimestamp == sleeperStart.AddHours(3) &&
+            m.IsQualified &&
+            !m.IsPrimary)).IsTrue();
+
+        await Assert.That(violationResult.RestMoments.Any(m =>
+            m.Timestamp == sleeperStart.AddHours(8) &&
+            m.ExactTimestamp == sleeperStart.AddHours(8) &&
+            m.IsQualified &&
+            m.IsPrimary)).IsTrue();
+    }
+
+    [Test]
+    public async Task AuditRange_AddsSingleProjectedSplitPairingMoment_ForBusRules()
+    {
+        var sleeperStart = DateTime.Parse("8/24/2023 08:00:00");
+        var projectedThreshold = sleeperStart.AddHours(6); // 8 hour full rest - 2 hour split rest.
+        var navigator = new TimelineNavigator.TimelineNavigator(new());
+        navigator.Add(new DutyStatusChangeMoment(DateTime.Parse("8/24/2023"), DutyStatus.OnDuty));
+        navigator.Add(new DutyStatusChangeMoment(sleeperStart, DutyStatus.Sleeper));
+        navigator.Add(new DutyStatusChangeMoment(DateTime.Parse("8/24/2023 15:00:00"), DutyStatus.OnDuty));
+        navigator.Add(new DutyStatusChangeMoment(DateTime.Parse("8/24/2023 20:00:00"), DutyStatus.OffDuty));
+
+        var sut = new HosAuditor(new UsBus60HrRuleDefinition());
+        var violationResult = sut.AuditRange(new AuditRangeQuery(
+            DateTime.Parse("8/24/2023"),
+            DateTime.Parse("8/24/2023 20:00:00"),
+            navigator,
+            AuditRules.AllRules));
+
+        await Assert.That(violationResult.RestMoments.Count(m => m.Timestamp == projectedThreshold)).IsEqualTo(1);
+        await Assert.That(violationResult.RestMoments.Any(m =>
+            m.Timestamp == projectedThreshold &&
+            m.ExactTimestamp == projectedThreshold &&
+            m.IsQualified &&
+            !m.IsPrimary)).IsTrue();
+    }
 }

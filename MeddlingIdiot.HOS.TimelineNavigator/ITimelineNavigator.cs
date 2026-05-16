@@ -67,5 +67,6 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
         bool IsAdverseConditionsEnabled { get; }
 
         void DumpSplitRestTimeline(ILogger logger);
+        List<RestMoment> GetRestTimelineMoments();
     }
 }

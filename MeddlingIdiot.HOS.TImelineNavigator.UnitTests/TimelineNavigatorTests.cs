@@ -329,18 +329,19 @@ public class TimelineNavigatorTests
     {
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 08:00:00"), DutyStatus.OffDuty));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), TimeSpan.FromHours(10)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10)));
         sut.Initialize();
 
         sut.JumpTo(DateTime.Parse("01/27/2023 08:00:00"));
         await Assert.That(sut.CurrentRestMoment.Timestamp).IsEqualTo(DateTime.Parse("01/27/2023 08:00:00"));
+        await Assert.That(sut.CurrentRestMoment.ExactTimestamp).IsEqualTo(DateTime.Parse("01/27/2023 07:00:00"));
     }
 
     [Test]
     public async Task Add_RestMoment_WithMinValueTimestamp_RoutesToUpsert()
     {
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
-        sut.Add(new RestMoment(DateTime.MinValue, TimeSpan.FromHours(10)));
+        sut.Add(new RestMoment(DateTime.MinValue, DateTime.MinValue, TimeSpan.FromHours(10)));
         sut.Initialize();
 
         sut.JumpTo(DateTime.MinValue);
@@ -440,7 +441,7 @@ public class TimelineNavigatorTests
     public async Task IsEndOfSleeperSplits_ReturnsFalse_WhenRestMomentsExistAhead()
     {
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), TimeSpan.FromHours(10)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10)));
         sut.Initialize();
 
         sut.JumpTo(DateTime.MinValue);
@@ -512,8 +513,8 @@ public class TimelineNavigatorTests
     public async Task DumpSplitRestTimeline_LogsEachRestMoment()
     {
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), TimeSpan.FromHours(10)));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), TimeSpan.FromHours(2)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), DateTime.Parse("01/27/2023 19:00:00"), TimeSpan.FromHours(2)));
         sut.Initialize();
 
         var logger = new InMemoryLogger();
@@ -547,8 +548,8 @@ public class TimelineNavigatorTests
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 08:00:00"), DutyStatus.OffDuty));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 20:00:00"), DutyStatus.Sleeper));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), TimeSpan.FromHours(10)));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), TimeSpan.FromHours(2)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), DateTime.Parse("01/27/2023 19:00:00"), TimeSpan.FromHours(2)));
         sut.Initialize();
 
         sut.JumpToNextRest();
@@ -563,8 +564,8 @@ public class TimelineNavigatorTests
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 08:00:00"), DutyStatus.OffDuty));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 20:00:00"), DutyStatus.Sleeper));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), TimeSpan.FromHours(10), isPaired: false));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), TimeSpan.FromHours(2), isPaired: true));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10), isPaired: false));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), DateTime.Parse("01/27/2023 19:00:00"), TimeSpan.FromHours(2), isPaired: true));
         sut.Initialize();
 
         sut.JumpToNextRest();
@@ -579,8 +580,8 @@ public class TimelineNavigatorTests
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 08:00:00"), DutyStatus.OffDuty));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 20:00:00"), DutyStatus.Sleeper));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), TimeSpan.FromHours(10)));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), TimeSpan.FromHours(2)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), DateTime.Parse("01/27/2023 19:00:00"), TimeSpan.FromHours(2)));
         sut.Initialize();
 
         sut.JumpToNextRest();
@@ -596,8 +597,8 @@ public class TimelineNavigatorTests
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 08:00:00"), DutyStatus.OffDuty));
         sut.Add(new DutyStatusChangeMoment(DateTime.Parse("01/27/2023 20:00:00"), DutyStatus.Sleeper));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), TimeSpan.FromHours(10), isPaired: false));
-        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), TimeSpan.FromHours(2), isPaired: true));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10), isPaired: false));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), DateTime.Parse("01/27/2023 19:00:00"), TimeSpan.FromHours(2), isPaired: true));
         sut.Initialize();
 
         sut.JumpToNextRest(paired: true);
@@ -660,5 +661,25 @@ public class TimelineNavigatorTests
 
         sut.JumpToNextShiftExtension(isExtended: true);
         await Assert.That(sut.IsShiftExtended).IsTrue();
+    }
+
+    [Test]
+    public async Task GetRestTimelineMoments_ReturnsAllAddedRestMoments()
+    {
+        var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(null, false));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 08:00:00"), DateTime.Parse("01/27/2023 07:00:00"), TimeSpan.FromHours(10)));
+        sut.Add(new RestMoment(DateTime.Parse("01/27/2023 20:00:00"), null, TimeSpan.FromHours(2)));
+        sut.Initialize();
+
+        var moments = sut.GetRestTimelineMoments();
+
+        using (Assert.Multiple())
+        {
+            await Assert.That(moments.Count).IsEqualTo(2);
+            await Assert.That(moments[0].Timestamp).IsEqualTo(DateTime.Parse("01/27/2023 08:00:00"));
+            await Assert.That(moments[0].Duration).IsEqualTo(TimeSpan.FromHours(10));
+            await Assert.That(moments[1].Timestamp).IsEqualTo(DateTime.Parse("01/27/2023 20:00:00"));
+            await Assert.That(moments[1].Duration).IsEqualTo(TimeSpan.FromHours(2));
+        }
     }
 }

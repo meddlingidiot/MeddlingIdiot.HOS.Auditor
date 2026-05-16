@@ -172,6 +172,7 @@ namespace MeddlingIdiot.HOS
             var shiftExtAudit = new ShiftExtensionOveruseChecker.ShiftExtensionOveruseChecker(navigator, _ruleDefinition, violationGateway, logger);
             shiftExtAudit.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
+            AddProjectedSplitPairingRestMoments(navigator, endOfAuditWindow);
             AddProjectedRestMomentsForFinalRestSegment(navigator, endOfAuditWindow);
 
             var violations = violationGateway.GetViolations();
@@ -221,6 +222,133 @@ namespace MeddlingIdiot.HOS
 
             var globalResetReachedAt = restStart.Add(_ruleDefinition.GlobalReset);
             navigator.Upsert(new RestMoment(globalResetReachedAt, globalResetReachedAt, TimeSpan.Zero, true, true, false, false, false, driverIdNumber, truckNumber));
+        }
+
+        private void AddProjectedSplitPairingRestMoments(ITimelineNavigator navigator, Moment endOfAuditWindow)
+        {
+            var thresholds = BuildSplitPairingProjectionThresholds();
+            if (thresholds.Count == 0)
+                return;
+
+            var sleeperSegments = GetSleeperSegmentsThrough(endOfAuditWindow.Timestamp, navigator);
+            if (sleeperSegments.Count == 0)
+                return;
+
+            var existingRestMomentsByTimestamp = navigator.GetRestTimelineMoments()
+                .GroupBy(m => m.Timestamp)
+                .ToDictionary(g => g.Key, g => g.Last());
+
+            foreach (var sleeperSegment in sleeperSegments)
+            {
+                var segmentDuration = sleeperSegment.End - sleeperSegment.Start;
+
+                foreach (var threshold in thresholds)
+                {
+                    if (segmentDuration < threshold.Size)
+                        continue;
+
+                    var projectedAt = sleeperSegment.Start.Add(threshold.Size);
+                    if (existingRestMomentsByTimestamp.TryGetValue(projectedAt, out var existingMoment))
+                    {
+                        var mergedMoment = new RestMoment(
+                            projectedAt,
+                            projectedAt,
+                            existingMoment.Duration,
+                            existingMoment.IsGlobalReset,
+                            existingMoment.IsFullRest,
+                            true,
+                            existingMoment.IsPrimary || threshold.IsPrimary,
+                            existingMoment.IsPaired,
+                            existingMoment.DriverIdNumber ?? sleeperSegment.DriverIdNumber,
+                            existingMoment.TruckNumber ?? sleeperSegment.TruckNumber);
+
+                        navigator.Upsert(mergedMoment);
+                        existingRestMomentsByTimestamp[projectedAt] = mergedMoment;
+                        continue;
+                    }
+
+                    var projectedMoment = new RestMoment(projectedAt, projectedAt, TimeSpan.Zero, false, false, true,
+                        threshold.IsPrimary, false, sleeperSegment.DriverIdNumber, sleeperSegment.TruckNumber);
+                    navigator.Upsert(projectedMoment);
+                    existingRestMomentsByTimestamp[projectedAt] = projectedMoment;
+                }
+            }
+        }
+
+        private List<(DateTime Start, DateTime End, string? DriverIdNumber, string? TruckNumber)> GetSleeperSegmentsThrough(
+            DateTime endTimestamp,
+            ITimelineNavigator navigator)
+        {
+            var sleeperSegments = new List<(DateTime Start, DateTime End, string? DriverIdNumber, string? TruckNumber)>();
+            DateTime? sleeperSegmentStart = null;
+            string? sleeperDriverIdNumber = null;
+            string? sleeperTruckNumber = null;
+
+            navigator.JumpTo(DateTime.MinValue);
+            while (!navigator.IsEndOfTime() && navigator.StartTimestamp < endTimestamp)
+            {
+                if (navigator.DutyStatus == DutyStatus.Sleeper)
+                {
+                    if (sleeperSegmentStart == null)
+                    {
+                        sleeperSegmentStart = navigator.StartTimestamp;
+                        sleeperDriverIdNumber = navigator.DriverIdNumber;
+                        sleeperTruckNumber = navigator.TruckNumber;
+                    }
+                }
+                else if (sleeperSegmentStart != null)
+                {
+                    sleeperSegments.Add((sleeperSegmentStart.Value, navigator.StartTimestamp, sleeperDriverIdNumber, sleeperTruckNumber));
+                    sleeperSegmentStart = null;
+                    sleeperDriverIdNumber = null;
+                    sleeperTruckNumber = null;
+                }
+
+                navigator.Next();
+            }
+
+            if (sleeperSegmentStart != null)
+            {
+                var segmentEnd = navigator.IsEndOfTime() ? endTimestamp : navigator.StartTimestamp;
+                if (segmentEnd > endTimestamp)
+                    segmentEnd = endTimestamp;
+
+                if (segmentEnd > sleeperSegmentStart.Value)
+                {
+                    sleeperSegments.Add((sleeperSegmentStart.Value, segmentEnd, sleeperDriverIdNumber, sleeperTruckNumber));
+                }
+            }
+
+            return sleeperSegments;
+        }
+
+        private List<(TimeSpan Size, bool IsPrimary)> BuildSplitPairingProjectionThresholds()
+        {
+            var minimumSizesForPairing = _ruleDefinition.UsesPrimarySplit
+                ? new[] { (_ruleDefinition.MinPrimarySplitRest, false), (_ruleDefinition.MinSecondarySplitRest, true) }
+                : new[] { (_ruleDefinition.MinSplitRest, false) };
+
+            var uniqueThresholds = new Dictionary<TimeSpan, bool>();
+            foreach (var minimumSize in minimumSizesForPairing)
+            {
+                var thresholdSize = _ruleDefinition.MinFullRest - minimumSize.Item1;
+                if (thresholdSize <= TimeSpan.Zero)
+                    continue;
+
+                if (uniqueThresholds.TryGetValue(thresholdSize, out var existingIsPrimary))
+                {
+                    uniqueThresholds[thresholdSize] = existingIsPrimary || minimumSize.Item2;
+                }
+                else
+                {
+                    uniqueThresholds[thresholdSize] = minimumSize.Item2;
+                }
+            }
+
+            return uniqueThresholds
+                .Select(x => (x.Key, x.Value))
+                .OrderBy(x => x.Key)
+                .ToList();
         }
 
         private Moment DontAllowClearViolationsToEndAtEndOfTime(ITimelineNavigator navigator, Moment endOfAuditWindow)

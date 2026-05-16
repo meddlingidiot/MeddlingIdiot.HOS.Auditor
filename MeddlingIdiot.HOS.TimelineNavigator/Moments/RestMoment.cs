@@ -3,6 +3,7 @@
     [Serializable]
     public sealed class RestMoment : Moment
     {
+        public DateTime? ExactTimestamp { get; private set; }
         public TimeSpan Duration { get; private set; }
         public bool IsGlobalReset { get; private set; }
         public bool IsFullRest { get; private set; }
@@ -12,7 +13,8 @@
 
         public RestMoment() { }
 
-        public RestMoment(DateTime timestamp,
+        public RestMoment(DateTime timestamp, 
+            DateTime? exactTimestamp,
             TimeSpan duration,
             bool isGlobalReset = false,
             bool isFullRest = false,
@@ -23,6 +25,7 @@
             string? truckNumber = null)
         {
             Timestamp = timestamp;
+            ExactTimestamp = exactTimestamp;
             Duration = duration;
             IsGlobalReset = isGlobalReset;
             IsFullRest = isFullRest;
@@ -39,6 +42,7 @@
             var src = this;
             RestMoment dest = new RestMoment();
             dest = (RestMoment)PopulateClone(src, dest);
+            dest.ExactTimestamp = src.ExactTimestamp;
             dest.Duration = src.Duration;
             dest.IsGlobalReset = src.IsGlobalReset;
             dest.IsFullRest = src.IsFullRest;

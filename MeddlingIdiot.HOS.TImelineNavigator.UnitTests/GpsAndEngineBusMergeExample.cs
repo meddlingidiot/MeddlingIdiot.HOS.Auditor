@@ -12,8 +12,8 @@ public class GpsAndEngineBusMergeExample
         var sut = new MeddlingIdiot.HOS.TimelineNavigator.TimelineNavigator(new StartOfDayTimelineOptions(daysToLoadBeforeEarliestTimestamp: 0));
 
         // Add GPS data around 6am - StartOfDay at midnight will be auto-generated
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 05:58:00"), 34.0522, -118.2437, "D12345", "T789")); // Los Angeles
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:02:00"), 34.0540, -118.2420, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 05:58:00"), 34.0522, -118.2437, null, null, null, null, "D12345", "T789")); // Los Angeles
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:02:00"), 34.0540, -118.2420, null, null, null, null, "D12345", "T789"));
 
         // Add EngineBus data - also contributes to StartOfDay generation
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 05:59:00"), 125430m, "D12345", "T789"));
@@ -56,54 +56,54 @@ public class GpsAndEngineBusMergeExample
         // GPS coordinates along I-5 North (more frequent) with EngineBus odometer readings scattered throughout
 
         // Starting point - Los Angeles (morning)
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:00:00"), 34.0522, -118.2437, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:00:00"), 34.0522, -118.2437, null, null, null, null, "D12345", "T789"));
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 06:00:00"), 125000m, "D12345", "T789"));
 
         // Early drive - Burbank area
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:15:00"), 34.1031, -118.3300, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:30:00"), 34.1808, -118.3090, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:45:00"), 34.2500, -118.4400, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:15:00"), 34.1031, -118.3300, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:30:00"), 34.1808, -118.3090, null, null, null, null,  "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 06:45:00"), 34.2500, -118.4400, null, null, null, null,  "D12345", "T789"));
 
         // Valencia area
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 07:00:00"), 125045m, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 07:05:00"), 34.3917, -118.5426, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 07:30:00"), 34.5553, -118.6453, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 08:00:00"), 34.8950, -118.9450, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 07:05:00"), 34.3917, -118.5426, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 07:30:00"), 34.5553, -118.6453, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 08:00:00"), 34.8950, -118.9450, null, null, null, null, "D12345", "T789"));
 
         // Bakersfield approach
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 08:30:00"), 35.3733, -119.0187, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 08:30:00"), 35.3733, -119.0187, null, null, null, null, "D12345", "T789"));
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 08:30:00"), 125120m, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 09:00:00"), 35.6000, -119.2000, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 09:30:00"), 35.9500, -119.5000, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 09:00:00"), 35.6000, -119.2000, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 09:30:00"), 35.9500, -119.5000, null, null, null, null, "D12345", "T789"));
 
         // Fresno area
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 10:00:00"), 36.4500, -119.6500, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 10:00:00"), 36.4500, -119.6500, null, null, null, null, "D12345", "T789"));
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 10:15:00"), 125210m, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 10:20:00"), 36.7378, -119.7871, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 10:45:00"), 37.0000, -120.0000, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 11:15:00"), 37.3000, -120.4800, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 11:45:00"), 37.5000, -120.8500, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 10:20:00"), 36.7378, -119.7871, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 10:45:00"), 37.0000, -120.0000, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 11:15:00"), 37.3000, -120.4800, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 11:45:00"), 37.5000, -120.8500, null, null, null, null, "D12345", "T789"));
 
         // Modesto area - lunch break
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 12:00:00"), 37.6391, -120.9969, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 12:00:00"), 37.6391, -120.9969, null, null, null, null, "D12345", "T789"));
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 12:00:00"), 125305m, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 12:15:00"), 37.6391, -120.9969, "D12345", "T789")); // Still parked
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 12:15:00"), 37.6391, -120.9969, null, null, null, null, "D12345", "T789")); // Still parked
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 12:30:00"), 125305m, "D12345", "T789")); // Still parked
 
         // Resume - Stockton area
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 12:45:00"), 37.7500, -121.1500, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 13:00:00"), 37.9577, -121.2908, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 13:20:00"), 38.1000, -121.5000, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 12:45:00"), 37.7500, -121.1500, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 13:00:00"), 37.9577, -121.2908, null, null, null, null, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 13:20:00"), 38.1000, -121.5000, null, null, null, null, "D12345", "T789"));
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 13:30:00"), 125340m, "D12345", "T789"));
 
         // Approaching Bay Area
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 13:45:00"), 38.0000, -122.0000, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 13:45:00"), 38.0000, -122.0000, null, null, null, null, "D12345", "T789"));
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 14:00:00"), 125365m, "D12345", "T789"));
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 14:10:00"), 37.7749, -122.4194, "D12345", "T789")); // San Francisco
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 14:20:00"), 37.7800, -122.4150, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 14:10:00"), 37.7749, -122.4194, null, null, null, null, "D12345", "T789")); // San Francisco
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 14:20:00"), 37.7800, -122.4150, null, null, null, null, "D12345", "T789"));
 
         // Final destination
-        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 14:30:00"), 37.7849, -122.4094, "D12345", "T789"));
+        sut.Add(new GpsMoment(DateTime.Parse("01/15/2024 14:30:00"), 37.7849, -122.4094, null, null, null, null, "D12345", "T789"));
         sut.Add(new EngineBusMoment(DateTime.Parse("01/15/2024 14:30:00"), 125385m, "D12345", "T789"));
 
         sut.Initialize();
@@ -180,19 +180,19 @@ public class GpsAndEngineBusMergeExample
         // Real-world scenario: GPS and EngineBus data captured at the exact same moment
         // Chicago to Milwaukee route
 
-        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 09:00:00"), 41.8781, -87.6298, "D98765", "T456")); // Chicago
+        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 09:00:00"), 41.8781, -87.6298, null, null, null, null, "D98765", "T456")); // Chicago
         sut.Add(new EngineBusMoment(DateTime.Parse("01/16/2024 09:00:00"), 87500m, "D98765", "T456"));
 
-        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 09:30:00"), 42.0308, -87.6890, "D98765", "T456")); // Evanston
+        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 09:30:00"), 42.0308, -87.6890, null, null, null, null, "D98765", "T456")); // Evanston
         sut.Add(new EngineBusMoment(DateTime.Parse("01/16/2024 09:30:00"), 87520m, "D98765", "T456"));
 
-        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 10:00:00"), 42.3314, -87.8410, "D98765", "T456")); // Kenosha
+        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 10:00:00"), 42.3314, -87.8410, null, null, null, null, "D98765", "T456")); // Kenosha
         sut.Add(new EngineBusMoment(DateTime.Parse("01/16/2024 10:00:00"), 87555m, "D98765", "T456"));
 
-        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 10:30:00"), 42.9634, -87.9065, "D98765", "T456")); // Racine
+        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 10:30:00"), 42.9634, -87.9065, null, null, null, null, "D98765", "T456")); // Racine
         sut.Add(new EngineBusMoment(DateTime.Parse("01/16/2024 10:30:00"), 87590m, "D98765", "T456"));
 
-        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 11:00:00"), 43.0389, -87.9065, "D98765", "T456")); // Milwaukee
+        sut.Add(new GpsMoment(DateTime.Parse("01/16/2024 11:00:00"), 43.0389, -87.9065, null, null, null, null, "D98765", "T456")); // Milwaukee
         sut.Add(new EngineBusMoment(DateTime.Parse("01/16/2024 11:00:00"), 87625m, "D98765", "T456"));
 
         var moments = new List<Moment>();
