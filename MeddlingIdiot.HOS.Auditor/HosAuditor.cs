@@ -172,7 +172,6 @@ namespace MeddlingIdiot.HOS
             var shiftExtAudit = new ShiftExtensionOveruseChecker.ShiftExtensionOveruseChecker(navigator, _ruleDefinition, violationGateway, logger);
             shiftExtAudit.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
 
-            AddProjectedSplitPairingRestMoments(navigator, endOfAuditWindow);
             AddProjectedRestMomentsForFinalRestSegment(navigator, endOfAuditWindow);
 
             var violations = violationGateway.GetViolations();
@@ -222,57 +221,6 @@ namespace MeddlingIdiot.HOS
 
             var globalResetReachedAt = restStart.Add(_ruleDefinition.GlobalReset);
             navigator.Upsert(new RestMoment(globalResetReachedAt, globalResetReachedAt, TimeSpan.Zero, true, true, false, false, false, driverIdNumber, truckNumber));
-        }
-
-        private void AddProjectedSplitPairingRestMoments(ITimelineNavigator navigator, Moment endOfAuditWindow)
-        {
-            var thresholds = BuildSplitPairingProjectionThresholds();
-            if (thresholds.Count == 0)
-                return;
-
-            var sleeperSegments = GetSleeperSegmentsThrough(endOfAuditWindow.Timestamp, navigator);
-            if (sleeperSegments.Count == 0)
-                return;
-
-            var existingRestMomentsByTimestamp = navigator.GetRestTimelineMoments()
-                .GroupBy(m => m.Timestamp)
-                .ToDictionary(g => g.Key, g => g.Last());
-
-            foreach (var sleeperSegment in sleeperSegments)
-            {
-                var segmentDuration = sleeperSegment.End - sleeperSegment.Start;
-
-                foreach (var threshold in thresholds)
-                {
-                    if (segmentDuration < threshold.Size)
-                        continue;
-
-                    var projectedAt = sleeperSegment.Start.Add(threshold.Size);
-                    if (existingRestMomentsByTimestamp.TryGetValue(projectedAt, out var existingMoment))
-                    {
-                        var mergedMoment = new RestMoment(
-                            projectedAt,
-                            projectedAt,
-                            existingMoment.Duration,
-                            existingMoment.IsGlobalReset,
-                            existingMoment.IsFullRest,
-                            true,
-                            existingMoment.IsPrimary || threshold.IsPrimary,
-                            existingMoment.IsPaired,
-                            existingMoment.DriverIdNumber ?? sleeperSegment.DriverIdNumber,
-                            existingMoment.TruckNumber ?? sleeperSegment.TruckNumber);
-
-                        navigator.Upsert(mergedMoment);
-                        existingRestMomentsByTimestamp[projectedAt] = mergedMoment;
-                        continue;
-                    }
-
-                    var projectedMoment = new RestMoment(projectedAt, projectedAt, TimeSpan.Zero, false, false, true,
-                        threshold.IsPrimary, false, sleeperSegment.DriverIdNumber, sleeperSegment.TruckNumber);
-                    navigator.Upsert(projectedMoment);
-                    existingRestMomentsByTimestamp[projectedAt] = projectedMoment;
-                }
-            }
         }
 
         private List<(DateTime Start, DateTime End, string? DriverIdNumber, string? TruckNumber)> GetSleeperSegmentsThrough(
