@@ -109,6 +109,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                         currentSplitMoment.TruckNumber);
 
                     _navigator.Upsert(pairedRestMoment);
+                    _navigator.JumpTo(saveStart.Timestamp);
                     return;
                 }
             } while (!_navigator.IsEndOfSleeperSplits());
