@@ -197,6 +197,7 @@ namespace MeddlingIdiot.HOS
                 return;
 
             var restStart = navigator.StartTimestamp;
+            var restEnd = navigator.FinishTimestamp;
             var driverIdNumber = navigator.DriverIdNumber;
             var truckNumber = navigator.TruckNumber;
 
@@ -206,12 +207,22 @@ namespace MeddlingIdiot.HOS
                 if (!DutyStatuses.AllRestDutyStatuses.Contains(navigator.DutyStatus))
                     break;
                 restStart = navigator.StartTimestamp;
+                restEnd = navigator.FinishTimestamp;
                 driverIdNumber = navigator.DriverIdNumber;
                 truckNumber = navigator.TruckNumber;
             }
 
-            var splitReachedAt = restStart.Add(_ruleDefinition.MinSplitRest);
-            navigator.Upsert(new RestMoment(splitReachedAt, splitReachedAt, TimeSpan.Zero, false, false, true, false, false, driverIdNumber, truckNumber));
+            if (navigator.CurrentRestMoment.IsPaired)
+            {
+                var splitReachedAt = restEnd;
+                navigator.Upsert(new RestMoment(splitReachedAt, splitReachedAt, TimeSpan.Zero, false, false, true, false, false, driverIdNumber, truckNumber));
+                
+            }
+            else
+            {
+                var splitReachedAt = restStart.Add(_ruleDefinition.MinSplitRest);
+                navigator.Upsert(new RestMoment(splitReachedAt, splitReachedAt, TimeSpan.Zero, false, false, true, false, false, driverIdNumber, truckNumber));
+            }
 
             var primaryReachedAt = restStart.Add(_ruleDefinition.MinPrimarySplitRest);
             navigator.Upsert(new RestMoment(primaryReachedAt, primaryReachedAt, TimeSpan.Zero, false, false, true, true, false, driverIdNumber, truckNumber));
