@@ -30,6 +30,8 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
         public void JumpToPriorShiftExtension(bool? isExtended = null);
         public void JumpToNextShiftExtension(bool? isExtended = null);
 
+        DateTime PeekAhead(Func<ITimelineNavigator, bool> predicate);
+
         void Next();
         void Prior();
 

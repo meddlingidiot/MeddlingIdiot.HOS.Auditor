@@ -90,7 +90,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                     var currentSplitMoment = _navigator.CurrentRestMoment;
 
                     _navigator.Upsert(new RestMoment(currentQualifiedRest.Timestamp,
-                        _navigator.FinishTimestamp,
+                        _navigator.PeekAhead(OffSplittableRest),
                         currentQualifiedRest.Duration,
                         false, false,
                         true,
@@ -100,7 +100,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                         _navigator.CurrentRestMoment.TruckNumber));
 
                     var pairedRestMoment = new RestMoment(currentSplitMoment.Timestamp,
-                        _navigator.FinishTimestamp,
+                        _navigator.PeekAhead(OffSplittableRest),
                         currentSplitMoment.Duration,
                         false, false, true,
                         false,
@@ -115,6 +115,12 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
             } while (!_navigator.IsEndOfSleeperSplits());
 
             _navigator.JumpTo(saveStart.Timestamp);
+        }
+
+        // True once the navigator has moved off of a splittable-rest duty status, i.e. the rest block has ended.
+        private bool OffSplittableRest(ITimelineNavigator navigator)
+        {
+            return !_ruleDefinition.SplitRestDutyStatuses.Contains(navigator.DutyStatus);
         }
 
     }

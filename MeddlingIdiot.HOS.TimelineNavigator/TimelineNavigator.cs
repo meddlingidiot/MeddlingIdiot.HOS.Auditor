@@ -457,6 +457,29 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
             JumpTo(_shiftExtensionTimeline.CurrentMoment.Timestamp);
         }
 
+        // Walks forward from the current position until <paramref name="predicate"/> is satisfied and
+        // returns the StartTimestamp of that moment, without disturbing the caller's current position.
+        // If the end of time is reached without a match, the last StartTimestamp seen is returned.
+        public DateTime PeekAhead(Func<ITimelineNavigator, bool> predicate)
+        {
+            var savedTimestamp = StartTimestamp;
+            try
+            {
+                while (!IsEndOfTime())
+                {
+                    Next();
+                    if (predicate(this))
+                        return StartTimestamp;
+                }
+
+                return StartTimestamp;
+            }
+            finally
+            {
+                JumpTo(savedTimestamp);
+            }
+        }
+
         public void Next()
         {
             if (Finish.Timestamp == DateTime.MaxValue)
