@@ -101,7 +101,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                         "    FOUND Secondary Rest Found At:  " + _navigator.CurrentRestMoment.Timestamp);
                     var currentSplitMoment = _navigator.CurrentRestMoment;
                     var splitRestMoment = new RestMoment(currentSplitMoment.Timestamp,
-                        currentSplitMoment.ExactTimestamp,
+                        _navigator.FinishTimestamp,
                         currentSplitMoment.Duration,
                         false, false,
                         true, //IsQualified

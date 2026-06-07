@@ -90,7 +90,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                     var currentSplitMoment = _navigator.CurrentRestMoment;
 
                     _navigator.Upsert(new RestMoment(currentQualifiedRest.Timestamp,
-                        currentQualifiedRest.ExactTimestamp,
+                        _navigator.FinishTimestamp,
                         currentQualifiedRest.Duration,
                         false, false,
                         true,
@@ -100,7 +100,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                         _navigator.CurrentRestMoment.TruckNumber));
 
                     var pairedRestMoment = new RestMoment(currentSplitMoment.Timestamp,
-                        currentSplitMoment.ExactTimestamp,
+                        _navigator.FinishTimestamp,
                         currentSplitMoment.Duration,
                         false, false, true,
                         false,
