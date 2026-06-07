@@ -52,6 +52,10 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
 
             var saveStart = _navigator.Start;
 
+            // Capture the primary segment's off-splittable end now, while the navigator is still
+            // positioned on it. JumpToNextRest below moves us onto the partner segment.
+            var primaryRestEnd = _navigator.PeekAhead(OffSplittableRest);
+
             _logger.Debug(LoggerCategories.Pairing, "Looking for Next Pair...");
 
             //We on last segment
@@ -90,7 +94,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                     var currentSplitMoment = _navigator.CurrentRestMoment;
 
                     _navigator.Upsert(new RestMoment(currentQualifiedRest.Timestamp,
-                        _navigator.PeekAhead(OffSplittableRest),
+                        primaryRestEnd,
                         currentQualifiedRest.Duration,
                         false, false,
                         true,
