@@ -39,6 +39,10 @@ namespace MeddlingIdiot.HOS
                     dutyStatusNavigator.Add(new DutyStatusChangeMoment(
                         currentGpsMoment.Timestamp,
                         DutyStatus.Driving,
+                        null,
+                        currentGpsMoment.StringRepresentation,
+                        currentGpsMoment.Latitude,
+                        currentGpsMoment.Longitude,
                         currentGpsMoment.DriverIdNumber, 
                         currentGpsMoment.TruckNumber));
                 }
@@ -47,6 +51,10 @@ namespace MeddlingIdiot.HOS
                     dutyStatusNavigator.Add(new DutyStatusChangeMoment(
                         currentGpsMoment.Timestamp,
                         DutyStatus.Sleeper,
+                        null,
+                        currentGpsMoment.StringRepresentation,
+                        currentGpsMoment.Latitude,
+                        currentGpsMoment.Longitude,
                         currentGpsMoment.DriverIdNumber,
                         currentGpsMoment.TruckNumber));
                 }

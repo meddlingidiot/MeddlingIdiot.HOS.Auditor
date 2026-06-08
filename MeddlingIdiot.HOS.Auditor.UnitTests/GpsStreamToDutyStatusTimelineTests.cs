@@ -109,19 +109,4 @@ public class GpsStreamToDutyStatusTimelineTests
         await Assert.That(result).IsSameReferenceAs(navigator);
     }
 
-    [Test]
-    public async Task PassesDriverIdNumberAsComment_AndTruckNumberAsDriverIdNumber()
-    {
-        // Note: the production code passes gps.DriverIdNumber as the 'comment' argument
-        // and gps.TruckNumber as the 'driverIdNumber' argument of DutyStatusChangeMoment.
-        var navigator = new TimelineNavigator.TimelineNavigator(new());
-        navigator.Add(new GpsMoment(DateTime.Parse("1/1/2024 08:00:00"), 0.0, 0.0, null, null, null, null, "D123", "T456"));
-        navigator.Add(new GpsMoment(DateTime.Parse("1/1/2024 09:00:00"), 0.1, 0.1, null, null, null, null, "D123", "T456"));
-
-        var result = _sut.ConvertGpsTimelineToDutyStatusTimeline(navigator);
-
-        result.JumpTo(DateTime.Parse("1/1/2024 08:00:00"));
-        await Assert.That(result.CurrentDutyStatusChangeMoment.Comment).IsEqualTo("D123");
-        await Assert.That(result.CurrentDutyStatusChangeMoment.DriverIdNumber).IsEqualTo("T456");
-    }
-}
+ }
