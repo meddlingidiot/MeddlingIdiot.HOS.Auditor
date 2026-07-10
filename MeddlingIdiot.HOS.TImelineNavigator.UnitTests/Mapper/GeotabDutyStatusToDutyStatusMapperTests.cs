@@ -11,6 +11,8 @@ public class GeotabDutyStatusToDutyStatusMapperTests
     [Arguments("D",   DutyStatus.Driving)]
     [Arguments("ON",  DutyStatus.OnDuty)]
     [Arguments("WT",  DutyStatus.OffDutyWaitingAtWellSite)]
+    [Arguments("PC",  DutyStatus.PersonalConveyance)]
+    [Arguments("YM",  DutyStatus.YardMove)]
     public async Task MapKnownGeotabStatus_ReturnsExpectedDutyStatus(string input, DutyStatus expected)
     {
         await Assert.That(GeotabDutyStatusToDutyStatusMapper.Map(input)).IsEqualTo(expected);
@@ -23,6 +25,8 @@ public class GeotabDutyStatusToDutyStatusMapperTests
     [Arguments("d")]
     [Arguments("on")]
     [Arguments("wt")]
+    [Arguments("pc")]
+    [Arguments("ym")]
     [Arguments("UNKNOWN")]
     [Arguments("X")]
     public async Task MapUnknownGeotabStatus_ReturnsUnknown(string input)

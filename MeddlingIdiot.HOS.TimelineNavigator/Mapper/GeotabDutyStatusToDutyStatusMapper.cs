@@ -16,6 +16,10 @@
                     return DutyStatus.OnDuty;
                 case "WT":
                     return DutyStatus.OffDutyWaitingAtWellSite;
+                case "PC":
+                    return DutyStatus.PersonalConveyance;
+                case "YM":
+                    return DutyStatus.YardMove;
                 default:
                     return DutyStatus.Unknown;
             }

@@ -11,7 +11,7 @@ A .NET library for auditing commercial driver compliance with FMCSA Hours of Ser
 
 ## Craftsmanship Note
 
-100% of the production code in this library was hand-written — no vibe coding. The codebase was developed test-first using TDD. I'll admit that AI helped fill in some of the coverage gaps in the test suite, but the implementation itself was not generated.
+The heart of this library — the rule engine, timeline navigation, and audit logic — was all hand-written, developed test-first using TDD. AI has been used to add small features, hunt bugs, and fill in some of the coverage gaps in the test suite.
 
 ## Overview
 

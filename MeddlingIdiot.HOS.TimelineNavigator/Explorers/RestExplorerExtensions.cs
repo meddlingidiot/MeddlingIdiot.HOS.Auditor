@@ -7,7 +7,7 @@ namespace MeddlingIdiot.HOS.TimelineNavigator.Explorers
     {
         public static bool IsRest(this ITimelineNavigator timelineNavigator)
         {
-            return timelineNavigator.DutyStatus is DutyStatus.OffDuty or DutyStatus.Sleeper or DutyStatus.Unknown;
+            return timelineNavigator.DutyStatus is DutyStatus.OffDuty or DutyStatus.Sleeper or DutyStatus.Unknown or DutyStatus.PersonalConveyance;
         }
 
         public static void MoveOffRest(this ITimelineNavigator timelineNavigator, TimelineDirection direction, ILogger? logger = null) 
