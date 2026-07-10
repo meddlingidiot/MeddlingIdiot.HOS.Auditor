@@ -33,7 +33,15 @@ It also handles sleeper berth split provisions, adverse conditions extensions, a
 | `Us60HrRuleDefinition` | US 60-hour / 7-day (default) |
 | `Us70HrRuleDefinition` | US 70-hour / 8-day |
 | `UsBus60HrRuleDefinition` | US Bus carrier 60-hour / 7-day |
+| `UsBus70HrRuleDefinition` | US Bus carrier 70-hour / 8-day |
 | `UsOilfield60HrRuleDefinition` | US Oilfield 60-hour / 7-day |
+| `UsOilfield70HrRuleDefinition` | US Oilfield 70-hour / 8-day |
+| `UsSleeperPilot60HrRuleDefinition` | US Sleeper Pilot 60-hour / 7-day |
+| `UsSleeperPilot70HrRuleDefinition` | US Sleeper Pilot 70-hour / 8-day |
+| `TexasIntrastate70HrRuleDefinition` | Texas intrastate (37 TAC §4.12) — 12h driving / 8h rest / 15h cumulative on-duty / 70-hour / 7-day |
+| `CaliforniaIntrastate80HrRuleDefinition` | California intrastate (13 CCR §1212.5) — 12h driving / 16h window / 80-hour / 8-day |
+| `FloridaIntrastate70HrRuleDefinition` | Florida intrastate (Fla. Stat. §316.302) — 12h driving / 16h window / 70-hour / 7-day |
+| `FloridaIntrastate80HrRuleDefinition` | Florida intrastate, carrier operating every day — 12h driving / 16h window / 80-hour / 8-day |
 
 ## Target Frameworks
 
