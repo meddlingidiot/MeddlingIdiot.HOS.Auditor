@@ -36,7 +36,9 @@ namespace MeddlingIdiot.HOS.Rules
             if (auditDay == DateTime.MinValue)
                 return TimeSpan.Zero;
             var totalUsed = TimeSpan.Zero;
-            for (var date = auditDay.AddDays(-daysInWindow - 1); date < auditDay; date = date.AddDays(1))
+            // The window spans `daysInWindow` days ending on (and including) auditDay, so the
+            // days *before* today are the (daysInWindow - 1) days in [auditDay-(N-1), auditDay).
+            for (var date = auditDay.AddDays(-daysInWindow + 1); date < auditDay; date = date.AddDays(1))
             {
                 if (_dailyRecap.ContainsKey(date))
                 {
