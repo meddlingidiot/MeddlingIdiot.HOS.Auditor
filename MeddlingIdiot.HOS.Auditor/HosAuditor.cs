@@ -1,4 +1,5 @@
-﻿using MeddlingIdiot.HOS.Queries;
+﻿using MeddlingIdiot.HOS.OffDutyCheckers;
+using MeddlingIdiot.HOS.Queries;
 using MeddlingIdiot.HOS.RestTimelineBuilders;
 using MeddlingIdiot.HOS.RuleLoop;
 using MeddlingIdiot.HOS.Rules;
@@ -116,13 +117,15 @@ namespace MeddlingIdiot.HOS
                 $"Over {Violation.FormatHours(_ruleDefinition.MinOnDutyLimit)} hour Limit", null, null,
                 ThrowViolationsAt.RestAccumulated);
             var windowRuleOptions = new WindowRuleOptions(
-                    DutyStatuses.WorkingDutyStatuses, 
-                    DutyStatuses.DrivingDutyStatus, 
+                    DutyStatuses.WorkingDutyStatuses,
+                    DutyStatuses.DrivingDutyStatus,
                     _ruleDefinition.NumberOfDaysInWindow,
                     _ruleDefinition.MinWindowLimit,
                     TimeSpan.Zero,
                     $"Over {Violation.FormatHours(_ruleDefinition.MinWindowLimit)} hour Limit", null, null,
-                    ThrowViolationsAt.EndOfDay);
+                    //Auto-cycle rulesets keep the window rule for day summaries but report
+                    //cycle violations through the CycleFeasibilityChecker instead.
+                    _ruleDefinition.WindowRuleThrowsViolations ? ThrowViolationsAt.EndOfDay : new List<ThrowViolations>());
 
             var unbrokenDrivingRule = new UnbrokenRule(navigator, unbrokenDrivingRuleOptions, logger);
             var drivingRule = new StandardRule(navigator, drivingRuleOptions, logger);
@@ -171,6 +174,24 @@ namespace MeddlingIdiot.HOS
 
             var shiftExtAudit = new ShiftExtensionOveruseChecker.ShiftExtensionOveruseChecker(navigator, _ruleDefinition, violationGateway, logger);
             shiftExtAudit.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
+
+            if (_ruleDefinition.MinDailyOffDuty > TimeSpan.Zero)
+            {
+                var dailyOffDutyChecker = new DailyOffDutyChecker(navigator, _ruleDefinition, violationGateway, logger);
+                dailyOffDutyChecker.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
+            }
+
+            if (_ruleDefinition.MinExtendedRest > TimeSpan.Zero)
+            {
+                var extendedRestChecker = new ExtendedRestChecker(navigator, _ruleDefinition, violationGateway, logger);
+                extendedRestChecker.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
+            }
+
+            if (_ruleDefinition.Cycle1WindowLimit > TimeSpan.Zero && _ruleDefinition.Cycle2WindowLimit > TimeSpan.Zero)
+            {
+                var cycleFeasibilityChecker = new CycleFeasibilityChecker(navigator, _ruleDefinition, violationGateway, logger);
+                cycleFeasibilityChecker.MainLoop(startOfAuditWindow, endOfAuditWindow, cancellationToken);
+            }
 
             AddProjectedRestMomentsForFinalRestSegment(navigator, endOfAuditWindow);
 

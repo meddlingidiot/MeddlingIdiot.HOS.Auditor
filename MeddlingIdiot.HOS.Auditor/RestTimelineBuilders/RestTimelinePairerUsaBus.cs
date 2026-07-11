@@ -87,7 +87,7 @@ namespace MeddlingIdiot.HOS.RestTimelineBuilders
                 }
 
                 if ((_navigator.CurrentRestMoment.IsQualified) &&
-                    ((currentQualifiedRest.Duration + _navigator.CurrentRestMoment.Duration) >= _ruleDefinition.MinFullRest)) 
+                    ((currentQualifiedRest.Duration + _navigator.CurrentRestMoment.Duration) >= _ruleDefinition.MinSplitTotalRest))
                 {
                     _logger.Debug(LoggerCategories.Pairing,
                         "    FOUND Paired Rest Found At:  " + _navigator.CurrentRestMoment.Timestamp);
