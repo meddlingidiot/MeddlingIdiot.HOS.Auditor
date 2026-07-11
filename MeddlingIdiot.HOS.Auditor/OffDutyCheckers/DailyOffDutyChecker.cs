@@ -75,6 +75,12 @@ namespace MeddlingIdiot.HOS.OffDutyCheckers
                 var offToday = SumRestOverlap(qualifyingRuns, day, dayEnd);
 
                 var required = _ruleDefinition.MinDailyOffDuty;
+                // s.18/s.19: a paired sleeper split satisfies s.14 with the split total. For
+                // single drivers the totals coincide (10h); for teams the split day only
+                // needs the 8h split total instead of the 10h daily minimum.
+                if (_ruleDefinition.MinSplitTotalRest < required &&
+                    pairedSplitTimestamps.Any(t => t >= day && t < dayEnd))
+                    required = _ruleDefinition.MinSplitTotalRest;
                 if (HasAdverseConditions(segments, day, dayEnd))
                     required -= _ruleDefinition.AdverseConditionsLimitExtension;
 
