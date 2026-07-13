@@ -10,14 +10,16 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
         void Add(GpsMoment moment);
         void Add(EngineBusMoment moment);
         void Add(AnchorMoment moment);
+        void Add(JurisdictionMoment moment);
         void Add(RestMoment moment);
         void Add(EventMoment moment);
         void Upsert(DutyStatusChangeMoment dutyChangeMoment);
         void Upsert(GpsMoment moment);
         void Upsert(EngineBusMoment moment);
         void Upsert(AnchorMoment moment);
+        void Upsert(JurisdictionMoment moment);
         void Upsert(RestMoment moment);
-        void Upsert(EventMoment moment); 
+        void Upsert(EventMoment moment);
         void Upsert(ShiftExtensionSegment segment);
         void Upsert(AgriculturalExceptionSegment segment);
         void Upsert(AdverseConditionsSegment segment);
@@ -70,5 +72,7 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
 
         void DumpSplitRestTimeline(ILogger logger);
         List<RestMoment> GetRestTimelineMoments();
+        void ClearRestTimeline();
+        List<JurisdictionMoment> GetJurisdictionMoments();
     }
 }

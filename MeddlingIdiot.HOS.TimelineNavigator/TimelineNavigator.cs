@@ -15,6 +15,7 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
         private readonly StartOfDayTimelineOptions _startOfDayTimelineOptions;
         private readonly StartOfDayTimeline<StartOfDayMoment> _startOfDayTimeline;
         private readonly ITimeline<AnchorMoment> _anchorTimeline;
+        private readonly ITimeline<JurisdictionMoment> _jurisdictionTimeline;
         private readonly ITimeline<DutyStatusChangeMoment> _dutyStatusChangeTimeline;
         private readonly ITimeline<GpsMoment> _gpsTimeline;
         private readonly ITimeline<EngineBusMoment> _engineBusTimeline;
@@ -58,6 +59,7 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
 
             _startOfDayTimeline = new StartOfDayTimeline<StartOfDayMoment>(_startOfDayTimelineOptions);
             _anchorTimeline = new Timeline<AnchorMoment>();
+            _jurisdictionTimeline = new Timeline<JurisdictionMoment>();
             _dutyStatusChangeTimeline = new Timeline<DutyStatusChangeMoment>();
             _gpsTimeline = new Timeline<GpsMoment>();
             _engineBusTimeline = new Timeline<EngineBusMoment>();
@@ -73,6 +75,7 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
                 _timelines.Add(_startOfDayTimeline);
             }
             _timelines.Add((ITimeline)_anchorTimeline);
+            _timelines.Add((ITimeline)_jurisdictionTimeline);
             _timelines.Add((ITimeline)_dutyStatusChangeTimeline);
             _timelines.Add((ITimeline)_gpsTimeline);
             _timelines.Add((ITimeline)_engineBusTimeline);
@@ -85,6 +88,12 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
         public void Add(AnchorMoment moment)
         {
             _anchorTimeline.Add(moment);
+            _startOfDayTimeline.Add(new StartOfDayMoment(moment.Timestamp, moment.DriverIdNumber, moment.TruckNumber));
+        }
+        
+        public void Add(JurisdictionMoment moment)
+        {
+            _jurisdictionTimeline.Add(moment);
             _startOfDayTimeline.Add(new StartOfDayMoment(moment.Timestamp, moment.DriverIdNumber, moment.TruckNumber));
         }
 
@@ -133,6 +142,13 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
         public void Upsert(AnchorMoment moment)
         {
             _anchorTimeline.Upsert(moment);
+            _startOfDayTimeline.Add(new StartOfDayMoment(moment.Timestamp, moment.DriverIdNumber, moment.TruckNumber));
+            PublishData();
+        }
+        
+        public void Upsert(JurisdictionMoment moment)
+        {
+            _jurisdictionTimeline.Upsert(moment);
             _startOfDayTimeline.Add(new StartOfDayMoment(moment.Timestamp, moment.DriverIdNumber, moment.TruckNumber));
             PublishData();
         }
@@ -219,7 +235,7 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
             }
         }
 
-                private Moment GetClosestOnOrBefore(DateTime searchTimestamp)
+        private Moment GetClosestOnOrBefore(DateTime searchTimestamp)
         {
             Moment? latestMoment = null;
             foreach (var timeline in _timelines)
@@ -383,7 +399,6 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
         }
 
         //TODO: This should be tested.
-
         public void JumpToPriorRest(bool? paired = null)
         {
             if ((paired == null))
@@ -418,8 +433,8 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
 
             JumpTo(_restTimeline.CurrentMoment.Timestamp);
         }
-        //TODO: This should be tested.
 
+        //TODO: This should be tested.
         public void JumpToPriorShiftExtension(bool? isExtended = null)
         {
             if ((isExtended == null))
@@ -613,7 +628,29 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
 
             return restMoments;
         }
-        
+
+        public void ClearRestTimeline()
+        {
+            _restTimeline.Clear();
+            _currentRestMoment = new RestMoment(DateTime.MinValue, DateTime.MinValue, TimeSpan.Zero);
+        }
+
+        public List<JurisdictionMoment> GetJurisdictionMoments()
+        {
+            List<JurisdictionMoment> jurisdictionMoments = new List<JurisdictionMoment>();
+            _jurisdictionTimeline.MoveOnOrBefore(DateTime.MinValue);
+            _jurisdictionTimeline.Next(); // skip sentinel at DateTime.MinValue
+            while (_jurisdictionTimeline.CurrentMoment.Timestamp > DateTime.MinValue)
+            {
+                jurisdictionMoments.Add((JurisdictionMoment)_jurisdictionTimeline.CurrentMoment.Clone());
+                if (_jurisdictionTimeline.IsEndOfTime())
+                    break;
+                _jurisdictionTimeline.Next();
+            }
+
+            return jurisdictionMoments;
+        }
+
         public IEnumerator<Moment> GetEnumerator()
         {
             Initialize();
