@@ -2,7 +2,7 @@ using MeddlingIdiot.HOS.TimelineNavigator;
 
 namespace MeddlingIdiot.HOS.OffDutyCheckers
 {
-    /// <summary>One contiguous stretch of a single duty status, as reported by the navigator.</summary>
+    /// <summary>One contiguous stretch of a single duty status, as reported by the navigator</summary>
     internal sealed record DutySegment(
         DateTime Start,
         DateTime Finish,
