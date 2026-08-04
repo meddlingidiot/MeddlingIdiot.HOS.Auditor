@@ -307,7 +307,6 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
             PublishData();
         }
 
-        //TODO: This should be tested.
         public void JumpToPriorRest(bool? paired = null)
         {
             if ((paired == null))
@@ -325,7 +324,6 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
             JumpTo(_restTimeline.CurrentMoment.Timestamp);
         }
 
-        //TODO: This should be tested.
         public void JumpToNextRest(bool? paired = null)
         {
             if ((paired == null))
@@ -343,7 +341,6 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
             JumpTo(_restTimeline.CurrentMoment.Timestamp);
         }
 
-        //TODO: This should be tested.
         public void JumpToPriorShiftExtension(bool? isExtended = null)
         {
             if ((isExtended == null))
@@ -362,7 +359,6 @@ namespace MeddlingIdiot.HOS.TimelineNavigator
             JumpTo(_shiftExtensionTimeline.CurrentMoment.Timestamp);
         }
 
-        //TODO: This should be tested.
         public void JumpToNextShiftExtension(bool? isExtended = null)
         {
             if ((isExtended == null))
