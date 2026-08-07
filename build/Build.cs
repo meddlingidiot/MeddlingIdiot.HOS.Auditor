@@ -1,10 +1,10 @@
 using System;
-using Nuke.Common;
-using Nuke.Common.ProjectModel;
-using Automation.Nuke.Components;
-using Automation.Nuke.Components.Components;
-using Automation.Nuke.Components.DefaultBuilds;
-using Automation.Nuke.Components.Parameters;
+using Fallout.Common;
+using Fallout.Solutions;
+using Automation.Fallout.Components;
+using Automation.Fallout.Components.Components;
+using Automation.Fallout.Components.DefaultBuilds;
+using Automation.Fallout.Components.Parameters;
 
 /// <summary>
 /// Build configuration for PackageBuild
@@ -16,12 +16,12 @@ using Automation.Nuke.Components.Parameters;
 ///   - Microsoft VSCode           https://nuke.build/vscode
 
 public class Build : GitHubActionsBuild, IHasGitHubPackages, IShowVersion, IClean, ICompile, IRestore, IScanForSecrets, 
-    IRunUnitTests, IRunIntegrationTests, IGenerateCoverageReport, ITest, IUpdateChangelog, IPackage, ITagRelease, 
+    IRunUnitTests, IRunIntegrationTests, IGenerateCoverageReport, ITest, IUpdateChangelog, IPackageGitHub, ITagRelease, 
     ICreateGitHubRelease, IAnnounceRelease, ITestExecution
 {
 
     public static int Main() => Execute<Build>(
-        x => ((IPackage)x).ReleasePackage);
+        x => ((IPackageGitHub)x).ReleasePackage);
 
     string IHasGitHubPackages.GitHubOwner => "meddlingidiot";
     int IHasTests.MinCoverageThreshold => 80;

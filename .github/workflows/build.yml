@@ -1,13 +1,13 @@
 # ============================================================================
-# GitHub Actions Workflow for Nuke Build
+# GitHub Actions Workflow for Fallout Build
 # ============================================================================
 #
 # Build Architecture:
-#   - Build Logic: All build logic is in Nuke (build/Build.cs)
+#   - Build Logic: All build logic is in Fallout (build/Build.cs)
 #   - CI/CD Orchestration: This workflow handles pipeline triggers and artifact publishing
 #   - Base Class: All DefaultBuilds inherit from GitHubActionsBuild
 #
-# Nuke Targets (defined in build/Build.cs and DefaultBuilds):
+# Fallout Targets (defined in build/Build.cs and DefaultBuilds):
 #   - ReleasePackage: Compile → Test → Package → Push to NuGet feed
 #   - ReleaseVelopack: Compile → Test → Build Velopack → Upload to Azure Blob
 #   - TagRelease: Tag and push git release (auto-triggered on main branch)
@@ -43,12 +43,15 @@ env:
 jobs:
   build:
     name: 'Build, Test, and Package'
-    runs-on: windows-latest
+    runs-on: 
+      group: Default
+      labels: [ self-hosted, Windows, X64 ]
 
     permissions:
       contents: write
       packages: write
       pull-requests: read
+      workflows: write  
 
     steps:
       # ----------------------------------------------------------------
@@ -79,14 +82,14 @@ jobs:
         shell: pwsh
 
       # ----------------------------------------------------------------
-      # Build: Run Nuke Build (uses default target from Build.cs)
+      # Build: Run Fallout Build (uses default target from Build.cs)
       # Default target is ReleasePackage, which performs:
       #   1. ShowVersion → Clean → Restore → Compile
       #   2. ScanSecrets → UnitTests → IntegrationTests → CoverageReport
       #   3. UpdateChangelog → Package → ReleasePackage (push to feed)
       #   4. TagRelease (if main branch)
       # ----------------------------------------------------------------
-      - name: Execute Nuke Build
+      - name: Execute Fallout Build
         run: |
           dotnet tool restore
           dotnet run --project .\build\_build.csproj -- --azure-blob-sas-token "${{ secrets.AZURE_BLOB_SAS_TOKEN }}" --artifacts-directory-param "${{ github.workspace }}\artifacts" --github-owner "${{ github.repository_owner }}"
@@ -94,7 +97,6 @@ jobs:
         env:
           AZUREBLOBSASTOKEN: ${{ secrets.AZURE_BLOB_SAS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
-          CODECOV_TOKEN_MIHA: ${{ secrets.CODECOV_TOKEN_MIHA }}
 
       # ----------------------------------------------------------------
       # Publish: NuGet Packages
@@ -126,6 +128,26 @@ jobs:
             echo "Coverage file not found"
           }
       
+      #      - name: Create Coverage Badge
+      #        if: always() && github.ref == 'refs/heads/main'
+      #        uses: schneegans/dynamic-badges-action@v1.7.0
+      #        with:
+      #          auth: ${{ secrets.GIST_SECRET }}
+      #          gistID: YOUR_GIST_ID_HERE
+      #          filename: coverage-badge.json
+      #          label: coverage
+      #          message: ${{ steps.coverage.outputs.percentage }}%
+      #          color: ${{ steps.coverage.outputs.percentage >= 80 && 'brightgreen' || steps.coverage.outputs.percentage >= 60 && 'yellow' || 'red' }}
+      
+      #     - name: Upload Coverage Report to Codecov
+      #       uses: codecov/codecov-action@v4
+      #       if: always()
+      #       continue-on-error: true
+      #       with:
+      #         files: ${{ github.workspace }}/artifacts/coverage-report/Cobertura.xml
+      #         fail_ci_if_error: false
+      #         token: ${{ secrets.CODECOV_TOKEN }}
+
       # ----------------------------------------------------------------
       # Publish: Coverage Report Artifact
       # ----------------------------------------------------------------

@@ -2,10 +2,76 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 1.0.26
+## [Unreleased] - 1.0.36
 
 ### 📝 Other Changes
 
+- Canada Part 2. All of canada rules are implemented. ([59ab0fc](../../commit/59ab0fc))
+- Canada Ruleset part 1. Will credit the AI. ([d386e32](../../commit/d386e32))
+- AI Found a bug in the DailyRecap rule logic ([7195000](../../commit/7195000))
+
+## [1.0.35] - 2026-07-09
+
+### 📝 Other Changes
+
+- Added new Itrastate rules ([7120c44](../../commit/7120c44))
+- Added PersonalConveyance and YardMove DutyStatuses. ([f681805](../../commit/f681805))
+
+## [1.0.34] - 2026-06-08
+
+### 📝 Other Changes
+
+- Add GPS coordinates and string representation to DutyStatusChangeMoment constructor calls and remove obsolete test ([0446fac](../../commit/0446fac))
+- Add location and GPS coordinates to DutyStatusChangeMoment ([bab5065](../../commit/bab5065))
+
+## [1.0.33] - 2026-06-06
+
+### 📝 Other Changes
+
+- Fix split pairing to capture primary rest end before navigator moves to partner segment ([01260ea](../../commit/01260ea))
+
+## [1.0.32] - 2026-06-06
+
+### 📝 Other Changes
+
+- Add PeekAhead method to determine actual end of splittable rest blocks ([d0f8671](../../commit/d0f8671))
+
+## [1.0.31] - 2026-06-06
+
+### 📝 Other Changes
+
+- Fix split pairing to use finish timestamp instead of exact timestamp for paired rest moments ([8f45b6f](../../commit/8f45b6f))
+
+## [1.0.30] - 2026-06-06
+
+### 📝 Other Changes
+
+- Adjust split pairing logic to use rest end timestamp for paired rest moments ([585013a](../../commit/585013a))
+
+## [1.0.29] - 2026-06-05
+
+### 📝 Other Changes
+
+- Reset navigator position after upserting paired rest moment in split pairing logic ([9bb8805](../../commit/9bb8805))
+
+## [1.0.28] - 2026-06-03
+
+### 📝 Other Changes
+
+- Add US sleeper pilot 60-hour and 70-hour rule definitions ([7187f50](../../commit/7187f50))
+
+## [1.0.27] - 2026-05-17
+
+### 📝 Other Changes
+
+- Remove obsolete unit tests for projected split pairing moments and adjust comment formatting in `HosAuditorTests`. ([ab29524](../../commit/ab29524))
+- Remove `AddProjectedSplitPairingRestMoments` as it's no longer used ([2e73539](../../commit/2e73539))
+
+## [1.0.26] - 2026-05-15
+
+### 📝 Other Changes
+
+- Remove redundant project references from the solution file ([75f85c2](../../commit/75f85c2))
 - Add `ExactTimestamp` to `RestMoment`, enhance GPS data with additional attributes, and implement projected split pairing moments for rest rule evaluation. ([eb2b746](../../commit/eb2b746))
 - Pulling in similiar projects to eliminate projects ([4d4098a](../../commit/4d4098a))
 
