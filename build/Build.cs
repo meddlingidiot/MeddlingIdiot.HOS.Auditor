@@ -26,7 +26,7 @@ public class Build : GitHubActionsBuild, IHasGitHubPackages, IShowVersion, IClea
     string IHasGitHubPackages.GitHubOwner => "meddlingidiot";
     int IHasTests.MinCoverageThreshold => 80;
     bool ITestExecution.UseMicrosoftTestingPlatform => true; 
-    bool IHasTests.UploadToCodecov => true;
+    bool IHasTests.UploadToCodecov => false;
     string IHasTests.CodecovToken => Environment.GetEnvironmentVariable("CODECOV_TOKEN_MIHA");
 
 }
