@@ -50,8 +50,7 @@ jobs:
     permissions:
       contents: write
       packages: write
-      pull-requests: read
-      workflows: write  
+      pull-requests: read 
 
     steps:
       # ----------------------------------------------------------------
