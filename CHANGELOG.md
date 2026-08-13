@@ -2,7 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 1.0.36
+## [Unreleased] - 1.0.41
+
+### 📝 Other Changes
+
+- turn off codecov ([f522961](../../commit/f522961))
+- fix missing "" ([dd032bd](../../commit/dd032bd))
+- fix for sucking in Fallout ([d7bca34](../../commit/d7bca34))
+- windows latest ([bf10d91](../../commit/bf10d91))
+- fix ([c0164c3](../../commit/c0164c3))
+- Upgraded to Fallout ([0e46267](../../commit/0e46267))
+
+## [1.0.40] - 2026-08-04
+
+### 📝 Other Changes
+
+- Added unit tests to patch a coverage hole ([9c6c6a4](../../commit/9c6c6a4))
+
+## [1.0.39] - 2026-07-28
+
+### 📝 Other Changes
+
+- trigger a build ([d6c0a80](../../commit/d6c0a80))
+
+## [1.0.38] - 2026-07-28
+
+### 📝 Other Changes
+
+- trigger a build ([41dd438](../../commit/41dd438))
+
+## [1.0.37] - 2026-07-13
+
+### 📝 Other Changes
+
+- Added jurisdiction timeline and audit that crosses jurisdiction boundaries, ([23ca71f](../../commit/23ca71f))
+
+## [1.0.36] - 2026-07-11
 
 ### 📝 Other Changes
 

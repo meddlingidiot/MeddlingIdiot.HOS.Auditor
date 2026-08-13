@@ -32,24 +32,18 @@ on:
       - 'LICENSE'
 
 # ============================================================================
-# Environment Variables
-# ============================================================================
-env:
-  DOTNET_SDK_VERSION: '10.0.x'
-
-# ============================================================================
 # Build Job
 # ============================================================================
 jobs:
   build:
     name: 'Build, Test, and Package'
     runs-on: windows-latest
-    
+ 
     permissions:
       contents: write
-      packages: write 
-      pull-requests: read 
-
+      packages: write
+      pull-requests: read
+      
     steps:
       # ----------------------------------------------------------------
       # Setup: Checkout code with full history for GitVersion
@@ -63,10 +57,25 @@ jobs:
       # ----------------------------------------------------------------
       # Setup: Install .NET SDK
       # ----------------------------------------------------------------
-      - name: Install .NET SDK ${{ env.DOTNET_SDK_VERSION }}
+      # The version comes from global.json so the runner installs exactly the SDK the
+      # repository is pinned to - a literal here would drift from the pin.
+      - name: Install the .NET SDK pinned in global.json
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+          global-json-file: global.json
+
+      # ----------------------------------------------------------------
+      # Setup: Install the workloads the solution needs
+      # ----------------------------------------------------------------
+      # Fallout's Clean and Compile targets walk the whole solution, so a head whose
+      # workload is missing (android, ios, wasm-tools) fails with NETSDK1147 before
+      # anything compiles. setup-dotnet installs an SDK but never its workloads, and
+      # workloads are per-feature-band — so a solution that builds on one SDK band can
+      # fail on the next one purely because the runner has no manifests for it.
+      # No argument: this restores whatever the solution in the working directory needs.
+      - name: Restore .NET workloads
+        run: dotnet workload restore
+        shell: pwsh
 
       # ----------------------------------------------------------------
       # Setup: Authenticate to GitHub Packages
@@ -86,14 +95,27 @@ jobs:
       #   3. UpdateChangelog → Package → ReleasePackage (push to feed)
       #   4. TagRelease (if main branch)
       # ----------------------------------------------------------------
+      # The SAS token is mapped through env: rather than passed on the command line, where it
+      # would show up in process listings on the runner. Fallout resolves it from any of
+      # AZURE_BLOB_SAS_TOKEN_LOCAL, AZUREBLOBSASTOKEN or AZURE_BLOB_SAS_TOKEN; an unset secret
+      # expands to empty, in which case the Velopack targets warn and skip the upload.
       - name: Execute Fallout Build
         run: |
           dotnet tool restore
-          dotnet run --project .\build\_build.csproj -- --azure-blob-sas-token "${{ secrets.AZURE_BLOB_SAS_TOKEN }}" --artifacts-directory-param "${{ github.workspace }}\artifacts" --github-owner "${{ github.repository_owner }}"
+          dotnet run --project .\build\_build.csproj -- --artifacts-directory-param "${{ github.workspace }}\artifacts" --github-owner "${{ github.repository_owner }}"
         shell: pwsh
         env:
-          AZUREBLOBSASTOKEN: ${{ secrets.AZURE_BLOB_SAS_TOKEN }}
+          AZURE_BLOB_SAS_TOKEN_LOCAL: ${{ secrets.AZURE_BLOB_SAS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          # IPublishBlazorWasm clones the separate static-site repo, which the job's own
+          # GITHUB_TOKEN cannot reach — it needs a PAT with repo scope on that repo.
+          # Build.cs reads this via Environment.GetEnvironmentVariable, so without the
+          # mapping the token is null and Fallout builds the clone URL as
+          # "https://@github.com/..." — git then prompts for a password and dies on a
+          # runner with "Cannot prompt because user interactivity has been disabled".
+          # An unset secret expands to empty and fails identically, so check the secret
+          # exists before assuming the mapping is the problem.
+          STATIC_SITE_GITHUB_TOKEN: ${{ secrets.STATIC_SITE_GITHUB_TOKEN }}
 
       # ----------------------------------------------------------------
       # Publish: NuGet Packages
